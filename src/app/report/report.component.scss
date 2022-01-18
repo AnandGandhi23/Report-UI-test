@@ -1,0 +1,28 @@
+table {
+    tr {
+        td {
+            span {
+                display: inline-block;
+            }
+        }
+        td:nth-child(4) {
+            border-top: hidden;
+            border-bottom: hidden;
+        }
+    }
+}
+
+.amount::first-letter {
+    padding-right: 0.3em;
+}
+
+.button-row {
+    display: flex;
+    width: 490px;
+    height: 52px;
+    justify-content: flex-end;
+}
+
+::ng-deep mat-form-field .mat-form-field-wrapper .mat-form-field-flex {
+    background-color: transparent;
+}
