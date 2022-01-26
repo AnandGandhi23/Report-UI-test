@@ -29,4 +29,43 @@ export class ReportService {
       })
       .toPromise();
   }
+
+  public getFranchiseName(): Promise<any> {
+    return this.http
+      .get(environment.serverUrl + "/franchise-location/getDistinctFranchiseName")
+      .toPromise();
+  }
+
+  public getReportDataByFranchiseName(franchiseIds: string[]): Promise<any> {
+    const headers = { 'Content-Type': 'application/json'}
+    return this.http
+      .post(environment.serverUrl + "/getReportDataByFranchiseName", {franchiseIds: franchiseIds}, {headers})
+      .toPromise();
+  }
+
+  public getReportDataByLocationGroup(franchiseIds: string[]): Promise<any> {
+    const headers = { 'Content-Type': 'application/json'}
+    return this.http
+      .post(environment.serverUrl + "/getReportDataByLocationGroup", {franchiseIds: franchiseIds}, {headers})
+      .toPromise();
+  }
+
+  public getReportDataByLocationName(franchiseIds: string[]): Promise<any> {
+    const headers = { 'Content-Type': 'application/json'}
+    return this.http
+      .post(environment.serverUrl + "/getReportDataByLocationName", {franchiseIds: franchiseIds}, {headers})
+      .toPromise();
+  }
+
+  public getLocationGroup(): Promise<any> {
+    return this.http
+      .get(environment.serverUrl + "/franchise-location/getDistinctLocationGroup")
+      .toPromise();
+  }
+
+  public getLocationName(): Promise<any> {
+    return this.http
+      .get(environment.serverUrl + "/franchise-location/getDistinctLocationName")
+      .toPromise();
+  }
 }

@@ -6,3 +6,8 @@ export interface ReportRequest {
 export interface ReportRequestByYear {
     year: number
 }
+
+export interface flterDropdown {
+    label: string,
+    value: string
+}

@@ -5,6 +5,25 @@
         <div class="d-flex">
             <div class="mr-2">
                 <mat-form-field appearance="fill">
+                    <mat-label>Filter</mat-label>
+                    <mat-select [(value)]="filter" (selectionChange)="filterApplied()">
+                        <mat-option value='all'>All</mat-option>
+                        <mat-option value='franchiseName'>Franchise Name</mat-option>
+                        <mat-option value='locationGroup'>Location Group</mat-option>
+                        <mat-option value='locationName'>Location Name</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="mr-2" *ngIf="filter !== 'all'">
+                <mat-form-field appearance="fill">
+                    <mat-label>Option</mat-label>
+                    <mat-select multiple [formControl]="selectedOptions">
+                        <mat-option *ngFor="let options of filterOptions" [value]="options.value" (onSelectionChange)="onChangeFilter()">{{options.label}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="mr-2" *ngIf="filter === 'all'">
+                <mat-form-field appearance="fill">
                     <mat-label>Enter a date range</mat-label>
                     <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
                     <input matStartDate formControlName="start" placeholder="Start date" (dateChange)="dateChanged()">
@@ -17,13 +36,13 @@
                     <mat-error *ngIf="range.controls['end'].hasError('matEndDateInvalid')">Invalid end date</mat-error>
                 </mat-form-field>    
             </div>
-            <div class="mr-2">
+            <div class="mr-2" *ngIf="filter === 'all'">
                 <mat-form-field appearance="fill">
                     <mat-label>Select a year</mat-label>
                     <mat-select [(value)]="selectedYear" (selectionChange)="yearChanged()" name="year">
-                    <mat-option *ngFor="let year of years" [value]="year">
-                        {{year}}
-                    </mat-option>
+                        <mat-option *ngFor="let year of years" [value]="year">
+                            {{year}}
+                        </mat-option>
                     </mat-select>
                 </mat-form-field>
             </div>
@@ -31,7 +50,7 @@
                 <button mat-raised-button color="primary" class="mr-2" (click)="exportexcel()">Download to Excel</button>
             </div>
         </div>
-        <table id="reportTable" class="table table-bordered">
+        <table *ngIf="!showFilteredTale" id="reportTable" class="table table-bordered regular-table">
             <thead>
                 <tr>
                     <td></td>
@@ -138,6 +157,22 @@
                         <span class="amount">{{(Math.abs(reportDataByYear.commissionTelemarketing))|| 0 | currency}}</span>
                     </td>
                     <td>{{Math.abs((reportDataByYear.commissionTelemarketing/reportDataByYear.totalIncome)) || 0 | percent: '1.2-2'}}</td>
+                </tr>
+            </tbody>
+        </table>
+        <table *ngIf="showFilteredTale" id="reportTable" class="table table-bordered">
+            <thead>
+                <tr>
+                    <td></td>
+                    <td *ngFor="let option of filteredOptions">{{option.label}} </td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let fields of reportFields">
+                    <td>{{fields.label}}</td>
+                    <td *ngFor="let option of filteredOptions" class="amount">
+                        {{(Math.abs(reportResponse[option.value] && reportResponse[option.value][fields.value]))|| 0 | currency}}
+                    </td>
                 </tr>
             </tbody>
         </table>

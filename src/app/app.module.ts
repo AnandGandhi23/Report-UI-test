@@ -14,6 +14,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule} from '@angular/material/select';
 import { NgxSpinnerModule } from "ngx-spinner";
 import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @NgModule({
   declarations: [
@@ -33,7 +34,8 @@ import { MatButtonModule } from '@angular/material/button';
     ReactiveFormsModule,
     MatSelectModule,
     NgxSpinnerModule,
-    MatButtonModule
+    MatButtonModule,
+    MatCheckboxModule
   ],
   providers: [],
   bootstrap: [AppComponent]

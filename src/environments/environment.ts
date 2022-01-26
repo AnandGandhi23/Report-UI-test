@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  serverUrl: "https://diq4x.sse.codesandbox.io"
+  serverUrl: "http://localhost:8080"
 };
 
 /*

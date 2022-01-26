@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { ReportService } from '../../service/report.service'
 import {FormGroup, FormControl, FormBuilder} from '@angular/forms';
-import { ReportRequest, ReportRequestByYear } from 'src/model/report.model';
+import { flterDropdown, ReportRequest, ReportRequestByYear } from 'src/model/report.model';
 import * as moment from 'moment';
 import { years } from '../../assets/files/years';
+import { reportFields } from '../../assets/files/report-meta';
 import { NgxSpinnerService } from "ngx-spinner";
 import * as XLSX from 'xlsx';
+import {debounce}  from 'lodash';
 
 @Component({
   selector: 'app-report',
@@ -24,6 +26,14 @@ export class ReportComponent implements OnInit {
   public selectedDate: string = '';
   public years = years;
   public selectedYear = 2021;
+  public filter: string = 'all';
+  public filterOptions: flterDropdown[] = [];
+  public selectedOptions = new FormControl([]);
+  public filteredOptions: flterDropdown[] = [];
+  public showFilteredTale: boolean = false;
+  public reportFields = reportFields;
+  public reportResponse: any = {};
+  public initialFilterApplied: boolean = true;
 
   constructor(private reportService: ReportService, private spinner: NgxSpinnerService) {}
 
@@ -120,9 +130,110 @@ export class ReportComponent implements OnInit {
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
  
-    /* save to file */  
+    /* save to file */
+    const fileName = this.filter === 'all' ? `Exhibit B_${this.selectedDate}.xlsx` : `Exhibit B_BY_${this.filter}`;
     XLSX.writeFile(wb, `Exhibit B_${this.selectedDate}.xlsx`);
- 
   }
 
+  public async filterApplied() {
+    try {
+      this.spinner.show();
+      this.filterOptions = [];
+      this.reportResponse = {};
+      this.initialFilterApplied = true
+      
+      if (this.filter === 'franchiseName') { // franchise name filter
+        this.filterOptions = await this.getFranchiseName();
+        
+        const selectedOptionValues: string[] = [];
+        this.filterOptions.forEach((option) => {
+          selectedOptionValues.push(option.value);
+        });
+        this.selectedOptions.setValue(selectedOptionValues);
+
+        this.reportResponse = await this.reportService.getReportDataByFranchiseName(this.selectedOptions.value);
+        this.showFilteredTale = true;
+      } else if (this.filter === 'locationGroup') {     // location group filter
+        this.filterOptions = await this.getLocationGroup();
+  
+        const selectedOptionValues: string[] = [];
+        this.filterOptions.forEach((option) => {
+          selectedOptionValues.push(option.value);
+        });
+        this.selectedOptions.setValue(selectedOptionValues);
+
+        this.reportResponse = await this.reportService.getReportDataByLocationGroup(this.selectedOptions.value);
+        this.showFilteredTale = true;
+      } else if (this.filter === 'locationName') {     // location name filter
+        this.filterOptions = await this.getLocationName();
+  
+        const selectedOptionValues: string[] = [];
+        this.filterOptions.forEach((option) => {
+          selectedOptionValues.push(option.value);
+        });
+        this.selectedOptions.setValue(selectedOptionValues);
+        this.reportResponse = await this.reportService.getReportDataByLocationName(this.selectedOptions.value);
+        this.showFilteredTale = true;
+      } else {
+        this.showFilteredTale = false;
+      }
+      this.filteredOptions = this.filterOptions;
+      setTimeout(() => {
+        this.initialFilterApplied = false
+      }, 1500);
+    } catch(e) {
+      console.log('error occured while filtering report', e);
+    } finally {
+      this.spinner.hide();
+    }
+  }
+
+  public async getFranchiseName() {
+    try {
+      return await this.reportService.getFranchiseName();
+    } catch(e) {
+      console.log('error occured while fetching franchise name', e);
+    }
+  }
+
+  public async getLocationGroup() {
+    try {
+      return await this.reportService.getLocationGroup();
+    } catch(e) {
+      console.log('error occured while fetching location group', e);
+    }
+  }
+
+  public async getLocationName() {
+    try {
+      return await this.reportService.getLocationName();
+    } catch(e) {
+      console.log('error occured while fetching location name', e);
+    }
+  }
+
+  onChangeFilter = debounce(() => {
+    if (!this.initialFilterApplied) {
+      this.filterReportData();
+    }
+  }, 700);
+
+  public async filterReportData() {
+    console.log('filterReportData called---');
+    try {
+      this.spinner.show();
+      
+      const selectedOptions: string[] = this.selectedOptions.value;
+      this.filteredOptions = this.filterOptions.filter((option) => {
+        return selectedOptions.includes(option.value);
+      });
+      console.log('selectedOptions--', this.selectedOptions.value);
+      console.log('filteredOptions--', this.filteredOptions);        
+      
+    }catch(e) {
+      console.log('error occurred in filter report data', e);
+    } finally {
+      this.spinner.hide();
+    }
+  } 
 }
