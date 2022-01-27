@@ -43,12 +43,12 @@ export class ReportComponent implements OnInit {
       startDate: moment(new Date(this.range.get('start')?.value)).format("YYYY-MM-DD"),
       endDate: moment(new Date(this.range.get('end')?.value)).format("YYYY-MM-DD"),
     };
-    this.getReportData(reportRequest);
+    // this.getReportData(reportRequest);
 
     const reportRequestByYear : ReportRequestByYear = {
       year: this.selectedYear
     };
-    this.getReportDataByYear(reportRequestByYear);
+    // this.getReportDataByYear(reportRequestByYear);
   }
 
   public getReportData = async (reportRequest: ReportRequest) => {
@@ -86,17 +86,27 @@ export class ReportComponent implements OnInit {
   }
 
   public async dateChanged() {
-    const startDate = this.range.get('start')?.value;
-    const endDate = this.range.get('end')?.value;
 
+    const startDate = this.range.get('start')?.value ? moment(new Date(this.range.get('start')?.value)).format("YYYY-MM-DD") : '';
+    const endDate = this.range.get('end')?.value ? moment(new Date(this.range.get('end')?.value)).format("YYYY-MM-DD") : ''
     if (startDate && endDate) {
-      this.setSelectedDate();
+      if (!this.showFilteredTale) {
+        this.setSelectedDate();
 
-      const reportRequest : ReportRequest = {
-        startDate: moment(new Date(startDate)).format("YYYY-MM-DD"),
-        endDate: moment(new Date(endDate)).format("YYYY-MM-DD"),
+        const reportRequest : ReportRequest = {
+          startDate,
+          endDate
+        }
+        await this.getReportData(reportRequest);
+      } else {
+        if (this.filter === 'franchiseName') {
+          this.reportResponse = await this.getReportDataByFranchiseName(this.selectedOptions.value, startDate, endDate);
+        } else if (this.filter === 'locationGroup') {
+          this.reportResponse = await this.getReportDataByLocationGroup(this.selectedOptions.value, startDate, endDate);
+        } else {
+          this.reportResponse = await this.getReportDataByLocationName(this.selectedOptions.value, startDate, endDate);
+        }
       }
-      await this.getReportData(reportRequest);
     }
   }
 
@@ -142,7 +152,9 @@ export class ReportComponent implements OnInit {
       this.reportResponse = {};
       this.initialFilterApplied = true
       
-      if (this.filter === 'franchiseName') { // franchise name filter
+      const startDate = moment(new Date(this.range.get('start')?.value)).format("YYYY-MM-DD");
+      const endDate = moment(new Date(this.range.get('end')?.value)).format("YYYY-MM-DD");
+      if (this.filter === 'franchiseName') {           // franchise name filter
         this.filterOptions = await this.getFranchiseName();
         
         const selectedOptionValues: string[] = [];
@@ -151,7 +163,7 @@ export class ReportComponent implements OnInit {
         });
         this.selectedOptions.setValue(selectedOptionValues);
 
-        this.reportResponse = await this.reportService.getReportDataByFranchiseName(this.selectedOptions.value);
+        this.reportResponse = await this.reportService.getReportDataByFranchiseName(this.selectedOptions.value, startDate, endDate);
         this.showFilteredTale = true;
       } else if (this.filter === 'locationGroup') {     // location group filter
         this.filterOptions = await this.getLocationGroup();
@@ -162,7 +174,7 @@ export class ReportComponent implements OnInit {
         });
         this.selectedOptions.setValue(selectedOptionValues);
 
-        this.reportResponse = await this.reportService.getReportDataByLocationGroup(this.selectedOptions.value);
+        this.reportResponse = await this.reportService.getReportDataByLocationGroup(this.selectedOptions.value, startDate, endDate);
         this.showFilteredTale = true;
       } else if (this.filter === 'locationName') {     // location name filter
         this.filterOptions = await this.getLocationName();
@@ -172,7 +184,8 @@ export class ReportComponent implements OnInit {
           selectedOptionValues.push(option.value);
         });
         this.selectedOptions.setValue(selectedOptionValues);
-        this.reportResponse = await this.reportService.getReportDataByLocationName(this.selectedOptions.value);
+
+        this.reportResponse = await this.reportService.getReportDataByLocationName(this.selectedOptions.value, startDate, endDate);
         this.showFilteredTale = true;
       } else {
         this.showFilteredTale = false;
@@ -211,6 +224,40 @@ export class ReportComponent implements OnInit {
       console.log('error occured while fetching location name', e);
     }
   }
+
+  public async getReportDataByFranchiseName(selectedOptions: string[], startDate: string, endDate: string) {
+    try {
+      this.spinner.show();
+      return await this.reportService.getReportDataByFranchiseName(selectedOptions, startDate, endDate)
+    } catch(e) {
+      console.log('error occured while fetching report data by franchise name', e);
+    } finally {
+      this.spinner.hide();
+    }
+  }
+
+  public async getReportDataByLocationGroup(selectedOptions: string[], startDate: string, endDate: string) {
+    try {
+      this.spinner.show();
+      return await this.reportService.getReportDataByLocationGroup(selectedOptions, startDate, endDate)
+    } catch(e) {
+      console.log('error occured while fetching report data by location group', e);
+    } finally {
+      this.spinner.hide();
+    }
+  }
+
+  public async getReportDataByLocationName(selectedOptions: string[], startDate: string, endDate: string) {
+    try {
+      this.spinner.show();
+      return await this.reportService.getReportDataByLocationName(selectedOptions, startDate, endDate)
+    } catch(e) {
+      console.log('error occured while fetching report data by location name', e);
+    } finally {
+      this.spinner.hide();
+    }
+  }
+
 
   onChangeFilter = debounce(() => {
     if (!this.initialFilterApplied) {

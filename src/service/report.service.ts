@@ -36,24 +36,48 @@ export class ReportService {
       .toPromise();
   }
 
-  public getReportDataByFranchiseName(franchiseIds: string[]): Promise<any> {
-    const headers = { 'Content-Type': 'application/json'}
+  public getReportDataByFranchiseName(franchiseIds: string[], startDate: string, endDate: string): Promise<any> {
+    const headers = { 'Content-Type': 'application/json'};
+    const body = { franchiseIds };
+    const option = {
+      params: {
+        startDate: startDate,
+        endDate: endDate
+      }, 
+      headers
+    }
     return this.http
-      .post(environment.serverUrl + "/getReportDataByFranchiseName", {franchiseIds: franchiseIds}, {headers})
+      .post(environment.serverUrl + "/getReportDataByFranchiseName", body, option)
       .toPromise();
   }
 
-  public getReportDataByLocationGroup(franchiseIds: string[]): Promise<any> {
+  public getReportDataByLocationGroup(franchiseIds: string[], startDate: string, endDate: string): Promise<any> {
     const headers = { 'Content-Type': 'application/json'}
+    const body = { franchiseIds };
+    const option = {
+      params: {
+        startDate: startDate,
+        endDate: endDate
+      }, 
+      headers
+    }
     return this.http
-      .post(environment.serverUrl + "/getReportDataByLocationGroup", {franchiseIds: franchiseIds}, {headers})
+      .post(environment.serverUrl + "/getReportDataByLocationGroup", body, option)
       .toPromise();
   }
 
-  public getReportDataByLocationName(franchiseIds: string[]): Promise<any> {
-    const headers = { 'Content-Type': 'application/json'}
+  public getReportDataByLocationName(franchiseIds: string[], startDate: string, endDate: string): Promise<any> {
+    const headers = { 'Content-Type': 'application/json'};
+    const body = { franchiseIds };
+    const option = {
+      params: {
+        startDate: startDate,
+        endDate: endDate
+      }, 
+      headers
+    };
     return this.http
-      .post(environment.serverUrl + "/getReportDataByLocationName", {franchiseIds: franchiseIds}, {headers})
+      .post(environment.serverUrl + "/getReportDataByLocationName", body, option)
       .toPromise();
   }
 

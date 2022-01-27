@@ -12,6 +12,26 @@
     }
 }
 
+.filtered-table {
+    thead {
+        tr {
+            td {
+                font-weight: bold;
+                white-space: nowrap;
+            }
+        }
+    }
+
+    tbody {
+        tr {
+            td:nth-child(1) {
+                font-weight: bold;
+                white-space: nowrap;
+            }
+        }
+    }
+}
+
 .amount::first-letter {
     padding-right: 0.3em;
 }
