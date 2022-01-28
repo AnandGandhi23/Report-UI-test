@@ -160,21 +160,34 @@
                 </tr>
             </tbody>
         </table>
-        <table *ngIf="showFilteredTale" id="reportTable" class="table filtered-table table-bordered">
-            <thead>
-                <tr>
-                    <td></td>
-                    <td *ngFor="let option of filteredOptions">{{option.label}} </td>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let fields of reportFields">
-                    <td>{{fields.label}}</td>
-                    <td *ngFor="let option of filteredOptions" class="amount">
-                        {{(Math.abs(reportResponse[option.value] && reportResponse[option.value][fields.value]))|| 0 | currency}}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="table-scroll">
+            <table *ngIf="showFilteredTale" id="reportTable" class="table filtered-table table-bordered">
+                <thead>
+                    <tr>
+                        <td rowspan="2"></td>
+                        <td colspan="2" class="header-text" *ngFor="let option of filteredOptions">{{option.label}} </td>
+                    </tr>
+                    <tr>
+                        <ng-container *ngFor="let option of filteredOptions">
+                            <td>Amount</td>
+                            <td>% of income</td>
+                        </ng-container>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let fields of reportFields">
+                        <td>{{fields.label}}</td>
+                        <ng-container *ngFor="let option of filteredOptions">
+                            <td class="amount">
+                                {{(Math.abs(reportResponse[option.value] && reportResponse[option.value][fields.value]))|| 0 | currency}}
+                            </td>
+                            <td>
+                                {{Math.abs(reportResponse[option.value] && (reportResponse[option.value][fields.value]/reportResponse[option.value]['totalIncome'])) || 0 | percent: '1.2-2'}}
+                            </td>
+                        </ng-container>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>

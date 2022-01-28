@@ -12,10 +12,20 @@
     }
 }
 
+.table-scroll {
+    max-width: 95vw;
+    overflow-x: auto;
+}
+
 .filtered-table {
     thead {
         tr {
             td {
+                white-space: nowrap;
+            }
+
+            .header-text {
+                text-align: center;
                 font-weight: bold;
                 white-space: nowrap;
             }
