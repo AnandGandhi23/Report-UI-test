@@ -23,7 +23,7 @@
                             noEntriesFoundLabel="no matching option found">
                             </ngx-mat-select-search>
                         </mat-option>
-                        <mat-option value="all" #allSelected (click)="toggleAllSelection()">All</mat-option>
+                        <mat-option value="all" #allSelected (click)="toggleAllSelection()">Select All</mat-option>
                         <mat-option *ngFor="let options of filteredOptionsList" [value]="options.value" (click)="onOptionSelectionChange()">{{options.label}}</mat-option>
                     </mat-select>
                 </mat-form-field>

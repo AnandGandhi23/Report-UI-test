@@ -18,6 +18,15 @@
 }
 
 .filtered-table {
+    thead tr td:first-child[rowspan],
+    tbody tr td:nth-child(1) {
+        font-weight: bold;
+        white-space: nowrap;
+        position: sticky;
+        left: 0;
+        background-color: white;
+    }
+    
     thead {
         tr {
             td {
