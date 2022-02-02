@@ -1,13 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { ReportService } from '../../service/report.service'
-import {FormGroup, FormControl, FormBuilder} from '@angular/forms';
+import {FormGroup, FormControl} from '@angular/forms';
 import { flterDropdown, ReportRequest, ReportRequestByYear } from 'src/model/report.model';
 import * as moment from 'moment';
 import { years } from '../../assets/files/years';
 import { reportFields } from '../../assets/files/report-meta';
+import { distinctFranchiseName } from '../../assets/files/dummy-data';
 import { NgxSpinnerService } from "ngx-spinner";
 import * as XLSX from 'xlsx';
 import {debounce}  from 'lodash';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-report',
@@ -27,13 +30,18 @@ export class ReportComponent implements OnInit {
   public years = years;
   public selectedYear = 2021;
   public filter: string = 'all';
-  public filterOptions: flterDropdown[] = [];
+  public optionsList: flterDropdown[] = [];
+  public filteredOptionsList: flterDropdown[] = [];
   public selectedOptions = new FormControl([]);
   public filteredOptions: flterDropdown[] = [];
   public showFilteredTale: boolean = false;
   public reportFields = reportFields;
   public reportResponse: any = {};
   public initialFilterApplied: boolean = true;
+  public searchOptionText = new FormControl('');
+  public total: any = {};
+
+  protected _onDestroy = new Subject<void>();
 
   constructor(private reportService: ReportService, private spinner: NgxSpinnerService) {}
 
@@ -49,6 +57,17 @@ export class ReportComponent implements OnInit {
       year: this.selectedYear
     };
     // this.getReportDataByYear(reportRequestByYear);
+
+    this.searchOptionText.valueChanges
+      .pipe(takeUntil(this._onDestroy))
+      .subscribe(() => {
+        this.filterOptions();
+      });
+  }
+
+  ngOnDestroy() {
+    this._onDestroy.next();
+    this._onDestroy.complete();
   }
 
   public getReportData = async (reportRequest: ReportRequest) => {
@@ -148,49 +167,48 @@ export class ReportComponent implements OnInit {
   public async filterApplied() {
     try {
       this.spinner.show();
-      this.filterOptions = [];
+      this.optionsList = [];
       this.reportResponse = {};
       this.initialFilterApplied = true
       
       const startDate = moment(new Date(this.range.get('start')?.value)).format("YYYY-MM-DD");
       const endDate = moment(new Date(this.range.get('end')?.value)).format("YYYY-MM-DD");
       if (this.filter === 'franchiseName') {           // franchise name filter
-        this.filterOptions = await this.getFranchiseName();
-        
+        this.optionsList = this.filteredOptionsList = await this.getFranchiseName();
         const selectedOptionValues: string[] = [];
-        this.filterOptions.forEach((option) => {
+        this.optionsList.forEach((option) => {
           selectedOptionValues.push(option.value);
         });
         this.selectedOptions.setValue(selectedOptionValues);
 
-        this.reportResponse = await this.reportService.getReportDataByFranchiseName(this.selectedOptions.value, startDate, endDate);
+        this.reportResponse = await this.getReportDataByFranchiseName(this.selectedOptions.value, startDate, endDate);
         this.showFilteredTale = true;
       } else if (this.filter === 'locationGroup') {     // location group filter
-        this.filterOptions = await this.getLocationGroup();
+        this.optionsList = this.filteredOptionsList = await this.getLocationGroup();
   
         const selectedOptionValues: string[] = [];
-        this.filterOptions.forEach((option) => {
+        this.optionsList.forEach((option) => {
           selectedOptionValues.push(option.value);
         });
         this.selectedOptions.setValue(selectedOptionValues);
 
-        this.reportResponse = await this.reportService.getReportDataByLocationGroup(this.selectedOptions.value, startDate, endDate);
+        this.reportResponse = await this.getReportDataByLocationGroup(this.selectedOptions.value, startDate, endDate);
         this.showFilteredTale = true;
       } else if (this.filter === 'locationName') {     // location name filter
-        this.filterOptions = await this.getLocationName();
+        this.optionsList = this.filteredOptionsList = await this.getLocationName();
   
         const selectedOptionValues: string[] = [];
-        this.filterOptions.forEach((option) => {
+        this.optionsList.forEach((option) => {
           selectedOptionValues.push(option.value);
         });
         this.selectedOptions.setValue(selectedOptionValues);
 
-        this.reportResponse = await this.reportService.getReportDataByLocationName(this.selectedOptions.value, startDate, endDate);
+        this.reportResponse = await this.getReportDataByLocationName(this.selectedOptions.value, startDate, endDate);
         this.showFilteredTale = true;
       } else {
         this.showFilteredTale = false;
       }
-      this.filteredOptions = this.filterOptions;
+      this.filteredOptions = this.optionsList;
       setTimeout(() => {
         this.initialFilterApplied = false
       }, 1500);
@@ -228,9 +246,18 @@ export class ReportComponent implements OnInit {
   public async getReportDataByFranchiseName(selectedOptions: string[], startDate: string, endDate: string) {
     try {
       this.spinner.show();
-      return await this.reportService.getReportDataByFranchiseName(selectedOptions, startDate, endDate)
+      const reportData: any[] = await this.reportService.getReportDataByFranchiseName(selectedOptions, startDate, endDate);
+
+      this.total = {};
+      reportFields.forEach((field: any) => {
+        Object.keys(reportData).forEach((key: any) => {
+          this.total[field.value] = (this.total[field.value] || 0) + (reportData[key][field.value] || 0);
+        });
+      });
+      return reportData;
     } catch(e) {
       console.log('error occured while fetching report data by franchise name', e);
+      return;
     } finally {
       this.spinner.hide();
     }
@@ -239,9 +266,18 @@ export class ReportComponent implements OnInit {
   public async getReportDataByLocationGroup(selectedOptions: string[], startDate: string, endDate: string) {
     try {
       this.spinner.show();
-      return await this.reportService.getReportDataByLocationGroup(selectedOptions, startDate, endDate)
+      const reportData: any[] = await this.reportService.getReportDataByLocationGroup(selectedOptions, startDate, endDate);
+      
+      this.total = {};
+      reportFields.forEach((field: any) => {
+        Object.keys(reportData).forEach((key: any) => {
+          this.total[field.value] = (this.total[field.value] || 0) + (reportData[key][field.value] || 0);
+        });
+      });
+      return reportData;
     } catch(e) {
       console.log('error occured while fetching report data by location group', e);
+      return;
     } finally {
       this.spinner.hide();
     }
@@ -250,31 +286,39 @@ export class ReportComponent implements OnInit {
   public async getReportDataByLocationName(selectedOptions: string[], startDate: string, endDate: string) {
     try {
       this.spinner.show();
-      return await this.reportService.getReportDataByLocationName(selectedOptions, startDate, endDate)
+      const reportData: any[] = await this.reportService.getReportDataByLocationName(selectedOptions, startDate, endDate);
+      this.total = {};
+      reportFields.forEach((field: any) => {
+        Object.keys(reportData).forEach((key: any) => {
+          this.total[field.value] = (this.total[field.value] || 0) + (reportData[key][field.value] || 0);
+        });
+      });
+      return reportData;
     } catch(e) {
       console.log('error occured while fetching report data by location name', e);
+      return;
     } finally {
       this.spinner.hide();
     }
   }
 
 
-  onChangeFilter = debounce(() => {
+  onOptionSelectionChange = debounce(() => {
     if (!this.initialFilterApplied) {
+      console.log('selection changed--');
       this.filterReportData();
     }
   }, 700);
 
   public async filterReportData() {
-    console.log('filterReportData called---');
     try {
       this.spinner.show();
       
       const selectedOptions: string[] = this.selectedOptions.value;
-      this.filteredOptions = this.filterOptions.filter((option) => {
+      console.log('selectedOptions--', this.selectedOptions.value);
+      this.filteredOptions = this.optionsList.filter((option) => {
         return selectedOptions.includes(option.value);
       });
-      console.log('selectedOptions--', this.selectedOptions.value);
       console.log('filteredOptions--', this.filteredOptions);        
       
     }catch(e) {
@@ -282,5 +326,21 @@ export class ReportComponent implements OnInit {
     } finally {
       this.spinner.hide();
     }
-  } 
+  }
+
+  public filterOptions() {
+    if (!this.optionsList) {
+      return;
+    }
+    // get the search keyword
+    let search = this.searchOptionText.value;
+    if (!search) {
+      this.filteredOptionsList = this.optionsList;
+      return;
+    } else {
+      search = search.toLowerCase();
+    }
+    // filter the option
+    this.filteredOptionsList = this.optionsList.filter(option => option.label.toLowerCase().indexOf(search) > -1)
+  }
 }

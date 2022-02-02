@@ -15,6 +15,7 @@ import { MatSelectModule} from '@angular/material/select';
 import { NgxSpinnerModule } from "ngx-spinner";
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     MatSelectModule,
     NgxSpinnerModule,
     MatButtonModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    NgxMatSelectSearchModule
   ],
   providers: [],
   bootstrap: [AppComponent]
