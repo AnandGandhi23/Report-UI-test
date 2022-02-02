@@ -51,12 +51,12 @@ export class ReportComponent implements OnInit {
       startDate: moment(new Date(this.range.get('start')?.value)).format("YYYY-MM-DD"),
       endDate: moment(new Date(this.range.get('end')?.value)).format("YYYY-MM-DD"),
     };
-    // this.getReportData(reportRequest);
+    this.getReportData(reportRequest);
 
     const reportRequestByYear : ReportRequestByYear = {
       year: this.selectedYear
     };
-    // this.getReportDataByYear(reportRequestByYear);
+    this.getReportDataByYear(reportRequestByYear);
 
     this.searchOptionText.valueChanges
       .pipe(takeUntil(this._onDestroy))
