@@ -22,7 +22,8 @@
                             <ngx-mat-select-search [formControl]="searchOptionText" placeholderLabel="Search"
                             noEntriesFoundLabel="no matching option found">
                             </ngx-mat-select-search>
-                          </mat-option>
+                        </mat-option>
+                        <mat-option value="all" #allSelected (click)="toggleAllSelection()">All</mat-option>
                         <mat-option *ngFor="let options of filteredOptionsList" [value]="options.value" (click)="onOptionSelectionChange()">{{options.label}}</mat-option>
                     </mat-select>
                 </mat-form-field>
@@ -165,7 +166,7 @@
                 </tr>
             </tbody>
         </table>
-        <div class="table-scroll">
+        <div class="wrapper">
             <table *ngIf="showFilteredTale" id="reportTable" class="table filtered-table table-bordered">
                 <thead>
                     <tr>

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ReportService } from '../../service/report.service'
 import {FormGroup, FormControl} from '@angular/forms';
 import { flterDropdown, ReportRequest, ReportRequestByYear } from 'src/model/report.model';
@@ -11,6 +11,7 @@ import * as XLSX from 'xlsx';
 import {debounce}  from 'lodash';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { MatOption } from '@angular/material/core';
 
 @Component({
   selector: 'app-report',
@@ -40,6 +41,8 @@ export class ReportComponent implements OnInit {
   public initialFilterApplied: boolean = true;
   public searchOptionText = new FormControl('');
   public total: any = {};
+  public selectAll = new FormControl(true);
+  @ViewChild('allSelected') private allSelected: MatOption;
 
   protected _onDestroy = new Subject<void>();
 
@@ -179,7 +182,7 @@ export class ReportComponent implements OnInit {
         this.optionsList.forEach((option) => {
           selectedOptionValues.push(option.value);
         });
-        this.selectedOptions.setValue(selectedOptionValues);
+        this.selectedOptions.setValue([...selectedOptionValues, 'all']);
 
         this.reportResponse = await this.getReportDataByFranchiseName(this.selectedOptions.value, startDate, endDate);
         this.showFilteredTale = true;
@@ -190,7 +193,7 @@ export class ReportComponent implements OnInit {
         this.optionsList.forEach((option) => {
           selectedOptionValues.push(option.value);
         });
-        this.selectedOptions.setValue(selectedOptionValues);
+        this.selectedOptions.setValue([...selectedOptionValues, 'all']);
 
         this.reportResponse = await this.getReportDataByLocationGroup(this.selectedOptions.value, startDate, endDate);
         this.showFilteredTale = true;
@@ -201,7 +204,7 @@ export class ReportComponent implements OnInit {
         this.optionsList.forEach((option) => {
           selectedOptionValues.push(option.value);
         });
-        this.selectedOptions.setValue(selectedOptionValues);
+        this.selectedOptions.setValue([...selectedOptionValues, 'all']);
 
         this.reportResponse = await this.getReportDataByLocationName(this.selectedOptions.value, startDate, endDate);
         this.showFilteredTale = true;
@@ -246,7 +249,13 @@ export class ReportComponent implements OnInit {
   public async getReportDataByFranchiseName(selectedOptions: string[], startDate: string, endDate: string) {
     try {
       this.spinner.show();
-      const reportData: any[] = await this.reportService.getReportDataByFranchiseName(selectedOptions, startDate, endDate);
+      const options = selectedOptions.slice();
+      const index = options.indexOf('all');
+      if (index > -1) {
+        console.log('splice--', index);
+        options.splice(index, 1);
+      }
+      const reportData: any[] = await this.reportService.getReportDataByFranchiseName(options, startDate, endDate);
 
       this.total = {};
       reportFields.forEach((field: any) => {
@@ -266,7 +275,13 @@ export class ReportComponent implements OnInit {
   public async getReportDataByLocationGroup(selectedOptions: string[], startDate: string, endDate: string) {
     try {
       this.spinner.show();
-      const reportData: any[] = await this.reportService.getReportDataByLocationGroup(selectedOptions, startDate, endDate);
+      const options = selectedOptions.slice();
+      const index = options.indexOf('all');
+      if (index > -1) {
+        console.log('splice--', index);
+        options.splice(index, 1);
+      }
+      const reportData: any[] = await this.reportService.getReportDataByLocationGroup(options, startDate, endDate);
       
       this.total = {};
       reportFields.forEach((field: any) => {
@@ -286,7 +301,13 @@ export class ReportComponent implements OnInit {
   public async getReportDataByLocationName(selectedOptions: string[], startDate: string, endDate: string) {
     try {
       this.spinner.show();
-      const reportData: any[] = await this.reportService.getReportDataByLocationName(selectedOptions, startDate, endDate);
+      const options = selectedOptions.slice();
+      const index = options.indexOf('all');
+      if (index > -1) {
+        console.log('splice--', index);
+        options.splice(index, 1);
+      }
+      const reportData: any[] = await this.reportService.getReportDataByLocationName(options, startDate, endDate);
       this.total = {};
       reportFields.forEach((field: any) => {
         Object.keys(reportData).forEach((key: any) => {
@@ -305,7 +326,15 @@ export class ReportComponent implements OnInit {
 
   onOptionSelectionChange = debounce(() => {
     if (!this.initialFilterApplied) {
-      console.log('selection changed--');
+      const index = this.selectedOptions.value.indexOf('all');
+      const lengthToCompare = (index > -1) ? this.optionsList.length + 1 : this.optionsList.length;
+      if (this.selectedOptions.value.length !== lengthToCompare) {
+        if (index > -1) {
+          this.selectedOptions.setValue(this.selectedOptions.value.filter((option: any) => option !== 'all'));
+        }
+      } else {
+        this.selectedOptions.setValue([...this.selectedOptions.value, 'all']);
+      }
       this.filterReportData();
     }
   }, 700);
@@ -342,5 +371,15 @@ export class ReportComponent implements OnInit {
     }
     // filter the option
     this.filteredOptionsList = this.optionsList.filter(option => option.label.toLowerCase().indexOf(search) > -1)
+  }
+
+  public toggleAllSelection() {
+    if (this.allSelected.selected) {
+      this.selectedOptions.setValue([...this.optionsList.map((option) => option.value), 'all']);
+      this.filterReportData();
+    } else {
+      this.selectedOptions.setValue([]);
+      this.filterReportData();
+    }
   }
 }
