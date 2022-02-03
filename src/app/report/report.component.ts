@@ -348,13 +348,25 @@ export class ReportComponent implements OnInit {
       this.filteredOptions = this.optionsList.filter((option) => {
         return selectedOptions.includes(option.value);
       });
-      console.log('filteredOptions--', this.filteredOptions);        
       
+      this.changeTotalValues();
     }catch(e) {
       console.log('error occurred in filter report data', e);
     } finally {
       this.spinner.hide();
     }
+  }
+
+  public changeTotalValues() {
+    this.total = {};
+    
+    reportFields.forEach((field: any) => {
+      Object.keys(this.reportResponse).forEach((key: any) => {
+        if (this.selectedOptions.value.includes(key)) {
+          this.total[field.value] = (this.total[field.value] || 0) + (this.reportResponse[key][field.value] || 0);
+        }
+      });
+    });
   }
 
   public filterOptions() {
