@@ -5,7 +5,7 @@ import { flterDropdown, ReportRequest, ReportRequestByYear } from 'src/model/rep
 import * as moment from 'moment';
 import { years } from '../../assets/files/years';
 import { reportFields } from '../../assets/files/report-meta';
-import { distinctFranchiseName } from '../../assets/files/dummy-data';
+import { distinctFranchiseName, reportData } from '../../assets/files/dummy-data';
 import { NgxSpinnerService } from "ngx-spinner";
 import * as XLSX from 'xlsx';
 import {debounce}  from 'lodash';
@@ -156,8 +156,29 @@ export class ReportComponent implements OnInit {
   {
     /* pass here the table id */
     let element = document.getElementById('reportTable');
-    const ws: XLSX.WorkSheet =XLSX.utils.table_to_sheet(element);
+    const ws: XLSX.WorkSheet =XLSX.utils.table_to_sheet(element, {raw:true});
  
+    var range = XLSX.utils.decode_range(ws['!ref'] || '');
+
+    for(var R = range.s.r; R <= range.e.r; ++R) {
+      for(var C = range.s.c; C <= range.e.c; ++C) {
+        var cell_address = {c:C, r:R};
+        /* if an A1-style address is needed, encode the address */
+        var cell_ref = XLSX.utils.encode_cell(cell_address);
+        console.log('cell_address--', cell_address,  ws[cell_ref]?.v);
+
+        if (R === 0) {
+          if (ws[cell_ref]) {
+            ws[cell_ref].s={
+              	font:{
+              		bold:true
+              }};
+            // ws[cell_ref].v = ws[cell_ref]?.v.bold();
+          }
+        }
+      }
+    }
+    
     /* generate workbook and add the worksheet */
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
