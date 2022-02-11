@@ -17,6 +17,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 
+import { MatRadioModule } from "@angular/material/radio";
+import { MatToolbarModule } from "@angular/material/toolbar";
+import { MatIconModule } from "@angular/material/icon";
+import { MatAutocompleteModule } from "@angular/material/autocomplete";
+import { MatTreeModule } from "@angular/material/tree";
+
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -37,7 +44,13 @@ import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
     NgxSpinnerModule,
     MatButtonModule,
     MatCheckboxModule,
-    NgxMatSelectSearchModule
+    NgxMatSelectSearchModule,
+    
+    MatRadioModule,
+    MatToolbarModule,
+    MatIconModule,
+    MatAutocompleteModule,
+    MatTreeModule
   ],
   providers: [],
   bootstrap: [AppComponent]

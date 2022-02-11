@@ -92,4 +92,29 @@ export class ReportService {
       .get(environment.serverUrl + "/franchise-location/getDistinctLocationName")
       .toPromise();
   }
+
+  public makeDataForDropdown(data: any[]) {
+    const returnValue: any = [];
+    const uniqueLocations = [...new Set(data.map(item => item.locationGroup))];
+
+    console.log('unique--', uniqueLocations);
+    uniqueLocations.forEach((uniqueValue: string) => {
+      let objToPush: any = {
+        item: uniqueValue,
+        value: data.find((o) => o.locationGroup === uniqueValue).locationId,
+        children: []
+      }
+      data.filter((t) => t.locationGroup === uniqueValue).forEach((objMatch) => {
+        objToPush.children.push({
+          item: objMatch.locationName,
+          value: objMatch.locationId
+        })
+      })
+
+      returnValue.push(objToPush);
+      objToPush = [];
+    })
+    console.log('return value --', returnValue)
+    return returnValue;
+  }
 }
