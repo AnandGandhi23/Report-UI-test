@@ -29,12 +29,12 @@
                 </mat-form-field>
             </div>
 
-            <div class="mr-2" *ngIf="showHierarchicalDD">
+            <div class="mr-2 hierarchical-dropdown" *ngIf="showHierarchicalDD">
                 <mat-form-field class="example-full-width" appearance="fill">
                     <input type="text" placeholder="{{getSelectedItems()}}" aria-label="Number" matInput
                         (input)="filterChanged($event)" [matAutocomplete]="auto">
                     <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
-                        <mat-option disabled>
+                        <mat-option disabled class="chkSelectAll">
                             <mat-checkbox [(ngModel)]="selectAllHierarchical" color="primary" (change)="selectAllNode()"> 
                                 Select All
                               </mat-checkbox>
@@ -85,6 +85,8 @@
                 </mat-form-field>
             </div>
             <div class="button-row">
+                <button mat-raised-button color="primary" *ngIf="showEditReportbtn && filter !== 'all'" class="mr-2" (click)="editReport()">Edit</button>
+                <button mat-raised-button color="primary" *ngIf="!showEditReportbtn && filter !== 'all'" class="mr-2" (click)="resetReport()">Reset</button>
                 <button mat-raised-button color="primary" class="mr-2" (click)="exportexcel()">Download to Excel</button>
             </div>
         </div>
@@ -219,11 +221,19 @@
                     <tr *ngFor="let fields of reportFields">
                         <td>{{fields.label}}</td>
                         <ng-container *ngFor="let option of filteredOptions">
-                            <td class="amount">
-                                <span>{{(Math.abs(reportResponse[option.value] && reportResponse[option.value][fields.value]))|| 0 | currency}}</span>
+                            <td>
+                                <span *ngIf="aboveTotalIncome.includes(fields.value) || !editReportMode || fields.value === 'totalIncome'"
+                                class="amount">{{(Math.abs(reportResponse[option.value] && reportResponse[option.value][fields.value]))|| 0 | currency}}</span>
+                                
+                                <input *ngIf="belowTotalIncome.includes(fields.value) && editReportMode" type="text" class="form-control" 
+                                [value]="(Math.abs(reportResponse[option.value] && reportResponse[option.value][fields.value])).toFixed(2) || 0" placeholder="Amount"
+                                (input)="reportValueChanged(option.value, fields, $event, true)">
                             </td>
                             <td>
-                                <span *ngIf="fields.value !== 'grossSale'">{{Math.abs(reportResponse[option.value] && (reportResponse[option.value][fields.value]/reportResponse[option.value]['totalIncome'])) || 0 | percent: '1.2-2'}}</span>
+                                <span *ngIf="fields.value === 'totalIncome' || (fields.value !== 'grossSale' && !editReportMode)">{{Math.abs(reportResponse[option.value] && (reportResponse[option.value][fields.value]/reportResponse[option.value]['totalIncome'])) || 0 | percent: '1.2-2'}}</span>
+                                <input *ngIf="fields.value !== 'grossSale' && editReportMode && fields.value !== 'totalIncome'" type="text" class="form-control" 
+                                [value]="(Math.abs(reportResponse[option.value] && (reportResponse[option.value][fields.value]/reportResponse[option.value]['totalIncome']*100)).toFixed(2)) || 0" placeholder="% of income"
+                                (input)="reportValueChanged(option.value, fields, $event, false)">
                             </td>
                         </ng-container>
                         <td class="amount">

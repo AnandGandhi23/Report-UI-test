@@ -66,23 +66,27 @@
     display: none;
   }
   
-  .example-tree ul,
-  .example-tree li {
+.example-tree ul,
+.example-tree li {
     margin-top: 0;
     margin-bottom: 0;
     list-style-type: none;
-  }
+}
   
-  .example-form {
+.example-form {
     min-width: 150px;
     max-width: 500px;
     width: 100%;
-  }
+}
   
-  .example-full-width {
+.example-full-width {
     width: 100%;
-  }
-  
+}
+
+.hierarchical-dropdown {
+    min-width: 300px;
+}
+
 ::ng-deep mat-form-field .mat-form-field-wrapper .mat-form-field-flex {
     background-color: transparent;
 }

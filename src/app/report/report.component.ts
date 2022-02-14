@@ -8,7 +8,7 @@ import { reportFields } from '../../assets/files/report-meta';
 import { distinctFranchiseName, distinctLocationGroup, reportData, reportDataForLocationName } from '../../assets/files/dummy-data';
 import { NgxSpinnerService } from "ngx-spinner";
 import * as XLSX from 'xlsx';
-import {debounce}  from 'lodash';
+import {debounce, filter}  from 'lodash';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { MatOption } from '@angular/material/core';
@@ -97,7 +97,7 @@ export class ChecklistDatabase {
       // Filter the tree
       function filter(array: any, text: any) {
         const getChildren = (result: any, object: any) => {
-          if (object.item .toLowerCase() === text.toLowerCase() ) {
+          if (object.item .toLowerCase().includes(text.toLowerCase())) {
             result.push(object);
             return result;
           }
@@ -150,13 +150,18 @@ export class ReportComponent implements OnInit {
   public showFilteredTale: boolean = false;
   public reportFields = reportFields;
   public reportResponse: any = {};
+  public originalReportResponse: any = {};
   public initialFilterApplied: boolean = true;
   public searchOptionText = new FormControl('');
   public total: any = {};
   public selectAll = new FormControl(true);
   @ViewChild('allSelected') private allSelected: MatOption;
   showHierarchicalDD: boolean = false;
-  selectAllHierarchical: boolean = false;
+  selectAllHierarchical: boolean = true;
+  public showEditReportbtn = true;
+  public editReportMode = false;
+  public aboveTotalIncome = ['grossSale', 'returnSale', 'cancelIncome'];
+  public belowTotalIncome = ['cogs', 'commissionConsultant', 'commissionPCC', 'commissionTelemarketing'];
 
   /** The selection for checklist */
   checklistSelection = new SelectionModel<FoodFlatNode>(true /* multiple */);
@@ -292,6 +297,7 @@ export class ReportComponent implements OnInit {
         } else {
           this.reportResponse = await this.getReportDataByLocationName(this.selectedNodes, startDate, endDate);
         }
+        Object.assign(this.originalReportResponse, this.reportResponse);
       }
     }
   }
@@ -371,6 +377,7 @@ export class ReportComponent implements OnInit {
         this.selectedOptions.setValue([...selectedOptionValues, 'all']);
 
         this.reportResponse = await this.getReportDataByFranchiseName(this.selectedOptions.value, startDate, endDate);
+        Object.assign(this.originalReportResponse, this.reportResponse);
         this.showFilteredTale = true;
         this.filteredOptions = this.optionsList;
       } else if (this.filter === 'locationGroup') {     // location group filter
@@ -384,6 +391,7 @@ export class ReportComponent implements OnInit {
         this.selectedOptions.setValue([...selectedOptionValues, 'all']);
 
         this.reportResponse = await this.getReportDataByLocationGroup(this.selectedOptions.value, startDate, endDate);
+        Object.assign(this.originalReportResponse, this.reportResponse);
         this.showFilteredTale = true;
         this.filteredOptions = this.optionsList;
       } else if (this.filter === 'locationName') {     // location name filter
@@ -407,6 +415,8 @@ export class ReportComponent implements OnInit {
         })
 
         this.reportResponse = await this.getReportDataByLocationName(this.selectedNodes, startDate, endDate);
+        // this.reportResponse = reportDataForLocationName;
+        Object.assign(this.originalReportResponse, this.reportResponse);
         console.log('reportResponse---', this.reportResponse);
         this.showFilteredTale = true;
       } else {
@@ -441,7 +451,9 @@ export class ReportComponent implements OnInit {
 
         this.selectedNodes.push(node.value || '');
       }
-    })
+    });
+
+    this.selectAllHierarchical = this.treeControl.dataNodes.length === this.checklistSelection.selected.length;
 
     if (calculateTotalValue)
       this.setTotalValue();
@@ -450,7 +462,7 @@ export class ReportComponent implements OnInit {
   public selectAllNode() {
     this.filteredOptions = [];
     this.selectedNodes = [];
-    console.log('this.checked---', this.selectAllHierarchical);
+
     if (this.selectAllHierarchical) {
       this.treeControl.dataNodes.forEach((node) => {
         this.checklistSelection.select(node);
@@ -783,4 +795,61 @@ export class ReportComponent implements OnInit {
     return flatNode;
   };
 
+  public editReport() {
+    this.editReportMode = true;
+    this.showEditReportbtn = false;
+  }
+
+  public resetReport() {
+    this.editReportMode = false;
+    this.showEditReportbtn = true;
+    Object.assign(this.reportResponse, this.originalReportResponse);
+  }
+
+  public reportValueChanged = debounce((id, fieldValue, event, isAmountValueChanged) => {
+    let changedObj: any = {};
+    Object.assign(changedObj, this.reportResponse[id]);
+
+    if (this.aboveTotalIncome.includes(fieldValue.value)) {
+      const changedPercent = event.target.value;
+      const cogsPercent = changedObj['cogs']/changedObj['totalIncome'];
+      const commissionConsultantPerent = changedObj['commissionConsultant']/changedObj['totalIncome'];
+      const commissionPCCPercent = changedObj['commissionPCC']/changedObj['totalIncome'];
+      const commissionTelemarketingPercent = changedObj['commissionTelemarketing']/changedObj['totalIncome'];
+      let count = 0;
+      while(true) {
+        console.log('loop---');
+        changedObj[fieldValue.value] = changedObj['totalIncome']*changedPercent/100;
+        changedObj['totalIncome'] = Math.abs(changedObj['grossSale'])-Math.abs(changedObj['returnSale'])-Math.abs(changedObj['cancelIncome']);
+
+        if (changedObj['totalIncome']*changedPercent/100 == changedObj[fieldValue.value]) {
+          changedObj['cogs'] = changedObj['totalIncome']*cogsPercent;
+          changedObj['commissionConsultant'] = changedObj['totalIncome']*commissionConsultantPerent;
+          changedObj['commissionPCC'] = changedObj['totalIncome']*commissionPCCPercent;
+          changedObj['commissionTelemarketing'] = changedObj['totalIncome']*commissionTelemarketingPercent;
+          this.reportResponse[id] = changedObj;
+          break;
+        }
+
+        if(count >= 1000) {
+          break;
+        }
+        count++;
+      }
+    } else {
+      if (isAmountValueChanged) {
+        const changedAmount = event.target.value;
+        changedObj[fieldValue.value] = changedAmount;
+      } else {
+        const changedPercent = event.target.value;
+        changedObj[fieldValue.value] = changedObj['totalIncome']*changedPercent/100;
+      }
+      this.reportResponse[id] = changedObj;
+    }
+    if (this.filter === 'locationName') {
+      this.setTotalValue();
+    } else {
+      this.changeTotalValues();
+    }
+  }, 600)
 }
