@@ -135,6 +135,9 @@ export class ReportComponent implements OnInit {
   public Math = Math;
   public reportData: any = {};
   public reportDataByYear: any = {};
+  public originalReportData: any = {};
+  public originalReportDataByYear: any = {};
+
   range = new FormGroup({
     start: new FormControl('2021-01-01'),
     end: new FormControl('2021-08-31'),
@@ -245,13 +248,8 @@ export class ReportComponent implements OnInit {
   public getReportData = async (reportRequest: ReportRequest) => {
     try {
       this.spinner.show();
-      const response : any[] = await this.reportService.getReportData(reportRequest);
-      response.map((data) => {
-        const objData = data[0];
-        Object.keys(objData).forEach(key => {
-          this.reportData[key] = objData[key];
-        });
-      });
+      this.reportData = await this.reportService.getReportData(reportRequest);
+      Object.assign(this.originalReportData, this.reportData); 
     } catch(e) {
       console.log('error occured while fetching report data', e);
     } finally {
@@ -262,13 +260,8 @@ export class ReportComponent implements OnInit {
   public getReportDataByYear = async (reportRequest: ReportRequestByYear) => {
     try {
       this.spinner.show();
-      const response : any[] = await this.reportService.getReportDataByYear(reportRequest);
-      response.map((data) => {
-        const objData = data[0];
-        Object.keys(objData).forEach(key => {
-          this.reportDataByYear[key] = objData[key];
-        });
-      });
+      this.reportDataByYear = await this.reportService.getReportDataByYear(reportRequest);
+      Object.assign(this.originalReportDataByYear, this.reportDataByYear);
     } catch(e) {
       console.log('error occured while fetching yearly report data', e);
     } finally {
@@ -804,9 +797,50 @@ export class ReportComponent implements OnInit {
     this.editReportMode = false;
     this.showEditReportbtn = true;
     Object.assign(this.reportResponse, this.originalReportResponse);
+    Object.assign(this.reportData, this.originalReportData);
+    Object.assign(this.reportDataByYear, this.originalReportDataByYear);
   }
 
-  public reportValueChanged = debounce((id, fieldValue, event, isAmountValueChanged) => {
+  public reportValueChanged = debounce((fieldValue, event, isAmountValueChanged, isYearWiseTable) => {
+    let objToChange = isYearWiseTable ? this.reportData : this.reportDataByYear;
+    if (this.aboveTotalIncome.includes(fieldValue.value)) {
+      const changedPercent = event.target.value;
+      const cogsPercent = objToChange['cogs']/objToChange['totalIncome'];
+      const commissionConsultantPerent = objToChange['commissionConsultant']/objToChange['totalIncome'];
+      const commissionPCCPercent = objToChange['commissionPCC']/objToChange['totalIncome'];
+      const commissionTelemarketingPercent = objToChange['commissionTelemarketing']/objToChange['totalIncome'];
+
+      let count = 0;
+      while(true) {
+        console.log('loop---');
+        objToChange[fieldValue.value] = objToChange['totalIncome']*changedPercent/100;
+        objToChange['totalIncome'] = Math.abs(objToChange['grossSale'])-Math.abs(objToChange['returnSale'])-Math.abs(objToChange['cancelIncome']);
+
+        if (objToChange['totalIncome']*changedPercent/100 == objToChange[fieldValue.value]) {
+          objToChange['cogs'] = objToChange['totalIncome']*cogsPercent;
+          objToChange['commissionConsultant'] = objToChange['totalIncome']*commissionConsultantPerent;
+          objToChange['commissionPCC'] = objToChange['totalIncome']*commissionPCCPercent;
+          objToChange['commissionTelemarketing'] = objToChange['totalIncome']*commissionTelemarketingPercent;
+          break;
+        }
+
+        if(count >= 1000) {
+          break;
+        }
+        count++;
+      }
+    } else {
+      if (isAmountValueChanged) {
+        const changedAmount = event.target.value;
+        objToChange[fieldValue.value] = changedAmount;
+      } else {
+        const changedPercent = event.target.value;
+        objToChange[fieldValue.value] = objToChange['totalIncome']*changedPercent/100;
+      }
+    }
+  }, 600);
+
+  public filteredReportValueChanged = debounce((id, fieldValue, event, isAmountValueChanged) => {
     let changedObj: any = {};
     Object.assign(changedObj, this.reportResponse[id]);
 

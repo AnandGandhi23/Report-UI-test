@@ -85,8 +85,8 @@
                 </mat-form-field>
             </div>
             <div class="button-row">
-                <button mat-raised-button color="primary" *ngIf="showEditReportbtn && filter !== 'all'" class="mr-2" (click)="editReport()">Edit</button>
-                <button mat-raised-button color="primary" *ngIf="!showEditReportbtn && filter !== 'all'" class="mr-2" (click)="resetReport()">Reset</button>
+                <button mat-raised-button color="primary" *ngIf="showEditReportbtn" class="mr-2" (click)="editReport()">Edit</button>
+                <button mat-raised-button color="primary" *ngIf="!showEditReportbtn" class="mr-2" (click)="resetReport()">Reset</button>
                 <button mat-raised-button color="primary" class="mr-2" (click)="exportexcel()">Download to Excel</button>
             </div>
         </div>
@@ -102,101 +102,39 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td><b>Gross Sales</b></td>
-                    <td>
-                        <span class="amount">{{(Math.abs(reportData.grossSale))|| 0 | currency}}</span>
-                    </td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <span class="amount">{{(Math.abs(reportDataByYear.grossSale))|| 0 | currency}}</span>
-                    </td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>Returns</td>
-                    <td>
-                        <span class="amount">{{(Math.abs(reportData.returnSale))|| 0 | currency}}</span>
-                    </td>
-                    <td>{{Math.abs((reportData.returnSale/reportData.totalIncome)) || 0 | percent: '1.2-2'}}</td>
-                    <td></td>
-                    <td>
-                        <span class="amount">{{(Math.abs(reportDataByYear.returnSale))|| 0 | currency}}</span>
-                    </td>
-                    <td>{{Math.abs((reportDataByYear.returnSale/reportDataByYear.totalIncome)) || 0 | percent: '1.2-2'}}</td>
-                </tr>
-                <tr>
-                    <td>Cancels</td>
-                    <td>
-                        <span class="amount">{{(Math.abs(reportData.cancelIncome))|| 0 | currency}}</span>
-                    </td>
-                    <td>{{Math.abs((reportData.cancelIncome/reportData.totalIncome)) || 0 | percent: '1.2-2'}}</td>
-                    <td></td>
-                    <td>
-                        <span class="amount">{{(Math.abs(reportDataByYear.cancelIncome))|| 0 | currency}}</span>
-                    </td>
-                    <td>{{Math.abs((reportDataByYear.cancelIncome/reportDataByYear.totalIncome)) || 0 | percent: '1.2-2'}}</td>
-                </tr>
-                <tr>
-                    <td>Total Income</td>
-                    <td>
-                        <span class="amount">{{(Math.abs(reportData.totalIncome))|| 0 | currency}}</span>
-                    </td>
-                    <td>{{Math.abs((reportData.totalIncome/reportData.totalIncome)) || 0 | percent: '1.2-2'}}</td>
-                    <td></td>
-                    <td>
-                        <span class="amount">{{(Math.abs(reportDataByYear.totalIncome))|| 0 | currency}}</span>
-                    </td>
-                    <td>{{Math.abs((reportDataByYear.totalIncome/reportDataByYear.totalIncome)) || 0 | percent: '1.2-2'}}</td>
-                </tr>
-                <tr>
-                    <td>COGS</td>
-                    <td>
-                        <span class="amount">{{(Math.abs(reportData.cogs))|| 0 | currency}}</span>
-                    </td>
-                    <td>{{Math.abs((reportData.cogs/reportData.totalIncome)) || 0 | percent: '1.2-2'}}</td>
-                    <td></td>
-                    <td>
-                        <span class="amount">{{(Math.abs(reportDataByYear.cogs))|| 0 | currency}}</span>
-                    </td>
-                    <td>{{Math.abs((reportDataByYear.cogs/reportDataByYear.totalIncome)) || 0 | percent: '1.2-2'}}</td>
-                </tr>
-                <tr>
-                    <td>Commissions - Consultants</td>
-                    <td>
-                        <span class="amount">{{(Math.abs(reportData.commissionConsultant))|| 0 | currency}}</span>
-                    </td>
-                    <td>{{Math.abs((reportData.commissionConsultant/reportData.totalIncome)) || 0 | percent: '1.2-2'}}</td>
-                    <td></td>
-                    <td>
-                        <span class="amount">{{(Math.abs(reportDataByYear.commissionConsultant))|| 0 | currency}}</span>
-                    </td>
-                    <td>{{Math.abs((reportDataByYear.commissionConsultant/reportDataByYear.totalIncome)) || 0 | percent: '1.2-2'}}</td>
-                </tr>
-                <tr>
-                    <td>Commissions - PCC</td>
-                    <td>
-                        <span class="amount">{{(Math.abs(reportData.commissionPCC))|| 0 | currency}}</span>
-                    </td>
-                    <td>{{Math.abs((reportData.commissionPCC/reportData.totalIncome)) || 0 | percent: '1.2-2'}}</td>
-                    <td></td>
-                    <td>
-                        <span class="amount">{{(Math.abs(reportDataByYear.commissionPCC))|| 0 | currency}}</span>
-                    </td>
-                    <td>{{Math.abs((reportDataByYear.commissionPCC/reportDataByYear.totalIncome)) || 0 | percent: '1.2-2'}}</td>
-                </tr>
-                <tr>
-                    <td>Commissions - Telemarketing</td>
-                    <td>
-                        <span class="amount">{{(Math.abs(reportData.commissionTelemarketing))|| 0 | currency}}</span>
-                    </td>
-                    <td>{{Math.abs((reportData.commissionTelemarketing/reportData.totalIncome)) || 0 | percent: '1.2-2'}}</td>
-                    <td></td>
-                    <td>
-                        <span class="amount">{{(Math.abs(reportDataByYear.commissionTelemarketing))|| 0 | currency}}</span>
-                    </td>
-                    <td>{{Math.abs((reportDataByYear.commissionTelemarketing/reportDataByYear.totalIncome)) || 0 | percent: '1.2-2'}}</td>
+                
+                <tr *ngFor="let fields of reportFields">
+                    <td>{{fields.label}}</td>
+                        
+                        <td>
+                            <span *ngIf="aboveTotalIncome.includes(fields.value) || !editReportMode || fields.value === 'totalIncome'"
+                            class="amount">{{Math.abs(reportData[fields.value])|| 0 | currency}}</span>
+                            
+                            <input *ngIf="belowTotalIncome.includes(fields.value) && editReportMode" type="text" class="form-control" 
+                            [value]="(Math.abs(reportData[fields.value])).toFixed(2) || 0" placeholder="Amount"
+                            (input)="reportValueChanged(fields, $event, true, true)">
+                        </td>
+                        <td>
+                            <span *ngIf="fields.value === 'totalIncome' || (fields.value !== 'grossSale' && !editReportMode)">{{Math.abs(reportData[fields.value]/reportData['totalIncome']) || 0 | percent: '1.2-2'}}</span>
+                            <input *ngIf="fields.value !== 'grossSale' && editReportMode && fields.value !== 'totalIncome'" type="text" class="form-control" 
+                            [value]="(Math.abs((reportData[fields.value]/reportData['totalIncome']*100)).toFixed(2)) || 0" placeholder="% of income"
+                            (input)="reportValueChanged(fields, $event, false, true)">
+                        </td>
+                        <td></td>
+                        <td>
+                            <span *ngIf="aboveTotalIncome.includes(fields.value) || !editReportMode || fields.value === 'totalIncome'"
+                            class="amount">{{Math.abs(reportDataByYear[fields.value])|| 0 | currency}}</span>
+                            
+                            <input *ngIf="belowTotalIncome.includes(fields.value) && editReportMode" type="text" class="form-control" 
+                            [value]="(Math.abs(reportDataByYear[fields.value])).toFixed(2) || 0" placeholder="Amount"
+                            (input)="reportValueChanged(fields, $event, true, false)">
+                        </td>
+                        <td>
+                            <span *ngIf="fields.value === 'totalIncome' || (fields.value !== 'grossSale' && !editReportMode)">{{Math.abs(reportDataByYear[fields.value]/reportDataByYear['totalIncome']) || 0 | percent: '1.2-2'}}</span>
+                            <input *ngIf="fields.value !== 'grossSale' && editReportMode && fields.value !== 'totalIncome'" type="text" class="form-control" 
+                            [value]="(Math.abs((reportDataByYear[fields.value]/reportDataByYear['totalIncome']*100)).toFixed(2)) || 0" placeholder="% of income"
+                            (input)="reportValueChanged(fields, $event, false, false)">
+                        </td>
                 </tr>
             </tbody>
         </table>
@@ -227,13 +165,13 @@
                                 
                                 <input *ngIf="belowTotalIncome.includes(fields.value) && editReportMode" type="text" class="form-control" 
                                 [value]="(Math.abs(reportResponse[option.value] && reportResponse[option.value][fields.value])).toFixed(2) || 0" placeholder="Amount"
-                                (input)="reportValueChanged(option.value, fields, $event, true)">
+                                (input)="filteredReportValueChanged(option.value, fields, $event, true)">
                             </td>
                             <td>
                                 <span *ngIf="fields.value === 'totalIncome' || (fields.value !== 'grossSale' && !editReportMode)">{{Math.abs(reportResponse[option.value] && (reportResponse[option.value][fields.value]/reportResponse[option.value]['totalIncome'])) || 0 | percent: '1.2-2'}}</span>
                                 <input *ngIf="fields.value !== 'grossSale' && editReportMode && fields.value !== 'totalIncome'" type="text" class="form-control" 
                                 [value]="(Math.abs(reportResponse[option.value] && (reportResponse[option.value][fields.value]/reportResponse[option.value]['totalIncome']*100)).toFixed(2)) || 0" placeholder="% of income"
-                                (input)="reportValueChanged(option.value, fields, $event, false)">
+                                (input)="filteredReportValueChanged(option.value, fields, $event, false)">
                             </td>
                         </ng-container>
                         <td class="amount">
