@@ -805,10 +805,11 @@ export class ReportComponent implements OnInit {
     let objToChange = isYearWiseTable ? this.reportData : this.reportDataByYear;
     if (this.aboveTotalIncome.includes(fieldValue.value)) {
       const changedPercent = event.target.value;
-      const cogsPercent = objToChange['cogs']/objToChange['totalIncome'];
-      const commissionConsultantPerent = objToChange['commissionConsultant']/objToChange['totalIncome'];
-      const commissionPCCPercent = objToChange['commissionPCC']/objToChange['totalIncome'];
-      const commissionTelemarketingPercent = objToChange['commissionTelemarketing']/objToChange['totalIncome'];
+      const totalIncome = parseFloat(objToChange['totalIncome'].toFixed(2));
+      const cogsPercent = parseFloat((objToChange['cogs']/totalIncome*100).toFixed(2));
+      const commissionConsultantPerent = parseFloat((objToChange['commissionConsultant']/totalIncome*100).toFixed(2));
+      const commissionPCCPercent = parseFloat((objToChange['commissionPCC']/totalIncome*100).toFixed(4));
+      const commissionTelemarketingPercent = parseFloat((objToChange['commissionTelemarketing']/totalIncome*100).toFixed(2));
 
       let count = 0;
       while(true) {
@@ -817,10 +818,12 @@ export class ReportComponent implements OnInit {
         objToChange['totalIncome'] = Math.abs(objToChange['grossSale'])-Math.abs(objToChange['returnSale'])-Math.abs(objToChange['cancelIncome']);
 
         if (objToChange['totalIncome']*changedPercent/100 == objToChange[fieldValue.value]) {
-          objToChange['cogs'] = objToChange['totalIncome']*cogsPercent;
-          objToChange['commissionConsultant'] = objToChange['totalIncome']*commissionConsultantPerent;
-          objToChange['commissionPCC'] = objToChange['totalIncome']*commissionPCCPercent;
-          objToChange['commissionTelemarketing'] = objToChange['totalIncome']*commissionTelemarketingPercent;
+          console.log('final---', objToChange['totalIncome'], cogsPercent, commissionConsultantPerent);
+          const totalIncome = parseFloat(objToChange['totalIncome'].toFixed(2));
+          objToChange['cogs'] = totalIncome*cogsPercent/100;
+          objToChange['commissionConsultant'] = totalIncome*commissionConsultantPerent/100;
+          objToChange['commissionPCC'] = totalIncome*commissionPCCPercent/100;
+          objToChange['commissionTelemarketing'] = totalIncome*commissionTelemarketingPercent/100;
           break;
         }
 
@@ -846,10 +849,13 @@ export class ReportComponent implements OnInit {
 
     if (this.aboveTotalIncome.includes(fieldValue.value)) {
       const changedPercent = event.target.value;
-      const cogsPercent = changedObj['cogs']/changedObj['totalIncome'];
-      const commissionConsultantPerent = changedObj['commissionConsultant']/changedObj['totalIncome'];
-      const commissionPCCPercent = changedObj['commissionPCC']/changedObj['totalIncome'];
-      const commissionTelemarketingPercent = changedObj['commissionTelemarketing']/changedObj['totalIncome'];
+      const totalIncome = parseFloat(changedObj['totalIncome'].toFixed(2));
+
+      const cogsPercent = parseFloat((changedObj['cogs']/totalIncome*100).toFixed(2));
+      const commissionConsultantPerent = parseFloat((changedObj['commissionConsultant']/totalIncome*100).toFixed(2));
+      const commissionPCCPercent = parseFloat((changedObj['commissionPCC']/totalIncome*100).toFixed(4));
+      const commissionTelemarketingPercent = parseFloat((changedObj['commissionTelemarketing']/totalIncome*100).toFixed(2));
+
       let count = 0;
       while(true) {
         console.log('loop---');
@@ -857,10 +863,13 @@ export class ReportComponent implements OnInit {
         changedObj['totalIncome'] = Math.abs(changedObj['grossSale'])-Math.abs(changedObj['returnSale'])-Math.abs(changedObj['cancelIncome']);
 
         if (changedObj['totalIncome']*changedPercent/100 == changedObj[fieldValue.value]) {
-          changedObj['cogs'] = changedObj['totalIncome']*cogsPercent;
-          changedObj['commissionConsultant'] = changedObj['totalIncome']*commissionConsultantPerent;
-          changedObj['commissionPCC'] = changedObj['totalIncome']*commissionPCCPercent;
-          changedObj['commissionTelemarketing'] = changedObj['totalIncome']*commissionTelemarketingPercent;
+          console.log('final percent--',changedObj['totalIncome'], cogsPercent);
+          const totalIncome = parseFloat(changedObj['totalIncome'].toFixed(2));
+
+          changedObj['cogs'] = totalIncome*cogsPercent/100;
+          changedObj['commissionConsultant'] = totalIncome*commissionConsultantPerent/100;
+          changedObj['commissionPCC'] = totalIncome*commissionPCCPercent/100;
+          changedObj['commissionTelemarketing'] = totalIncome*commissionTelemarketingPercent/100;
           this.reportResponse[id] = changedObj;
           break;
         }
