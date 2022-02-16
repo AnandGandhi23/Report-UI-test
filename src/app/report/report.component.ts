@@ -583,7 +583,7 @@ export class ReportComponent implements OnInit {
     reportFields.forEach((field: any) => {
       Object.keys(this.reportResponse).forEach((key: any) => {
         if (this.selectedNodes.includes(key)) {
-          this.total[field.value] = (this.total[field.value] || 0) + (this.reportResponse[key][field.value] || 0);
+          this.total[field.value] = (parseFloat(this.total[field.value]) || 0) + (parseFloat(this.reportResponse[key][field.value]) || 0);
         }
       });
     });
@@ -629,7 +629,7 @@ export class ReportComponent implements OnInit {
     reportFields.forEach((field: any) => {
       Object.keys(this.reportResponse).forEach((key: any) => {
         if (this.selectedOptions.value.includes(key)) {
-          this.total[field.value] = (this.total[field.value] || 0) + (this.reportResponse[key][field.value] || 0);
+          this.total[field.value] = (parseFloat(this.total[field.value]) || 0) + (parseFloat(this.reportResponse[key][field.value]) || 0);
         }
       });
     });

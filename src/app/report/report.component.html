@@ -85,7 +85,7 @@
                 </mat-form-field>
             </div>
             <div class="button-row">
-                <button mat-raised-button color="primary" *ngIf="showEditReportbtn" class="mr-2" (click)="editReport()">Edit</button>
+                <button mat-raised-button color="primary" *ngIf="showEditReportbtn" class="mr-2" (click)="editReport()">Test Mode</button>
                 <button mat-raised-button color="primary" *ngIf="!showEditReportbtn" class="mr-2" (click)="resetReport()">Reset</button>
                 <button mat-raised-button color="primary" class="mr-2" (click)="exportexcel()">Download to Excel</button>
             </div>
@@ -111,13 +111,13 @@
                             class="amount">{{Math.abs(reportData[fields.value])|| 0 | currency}}</span>
                             
                             <input *ngIf="belowTotalIncome.includes(fields.value) && editReportMode" type="text" class="form-control" 
-                            [value]="(Math.abs(reportData[fields.value])).toFixed(2) || 0" placeholder="Amount"
+                            [value]="reportData[fields.value] ? (Math.abs(reportData[fields.value])).toFixed(2) : 0" placeholder="Amount"
                             (input)="reportValueChanged(fields, $event, true, true)">
                         </td>
                         <td>
                             <span *ngIf="fields.value === 'totalIncome' || (fields.value !== 'grossSale' && !editReportMode)">{{Math.abs(reportData[fields.value]/reportData['totalIncome']) || 0 | percent: '1.2-2'}}</span>
                             <input *ngIf="fields.value !== 'grossSale' && editReportMode && fields.value !== 'totalIncome'" type="text" class="form-control" 
-                            [value]="(Math.abs((reportData[fields.value]/reportData['totalIncome']*100)).toFixed(2)) || 0" placeholder="% of income"
+                            [value]="reportData[fields.value] ? (Math.abs((reportData[fields.value]/reportData['totalIncome']*100)).toFixed(2)) : 0" placeholder="% of income"
                             (input)="reportValueChanged(fields, $event, false, true)">
                         </td>
                         <td></td>
@@ -126,13 +126,13 @@
                             class="amount">{{Math.abs(reportDataByYear[fields.value])|| 0 | currency}}</span>
                             
                             <input *ngIf="belowTotalIncome.includes(fields.value) && editReportMode" type="text" class="form-control" 
-                            [value]="(Math.abs(reportDataByYear[fields.value])).toFixed(2) || 0" placeholder="Amount"
+                            [value]="reportDataByYear[fields.value] ? (Math.abs(reportDataByYear[fields.value])).toFixed(2) : 0" placeholder="Amount"
                             (input)="reportValueChanged(fields, $event, true, false)">
                         </td>
                         <td>
                             <span *ngIf="fields.value === 'totalIncome' || (fields.value !== 'grossSale' && !editReportMode)">{{Math.abs(reportDataByYear[fields.value]/reportDataByYear['totalIncome']) || 0 | percent: '1.2-2'}}</span>
                             <input *ngIf="fields.value !== 'grossSale' && editReportMode && fields.value !== 'totalIncome'" type="text" class="form-control" 
-                            [value]="(Math.abs((reportDataByYear[fields.value]/reportDataByYear['totalIncome']*100)).toFixed(2)) || 0" placeholder="% of income"
+                            [value]="reportDataByYear[fields.value] ? (Math.abs((reportDataByYear[fields.value]/reportDataByYear['totalIncome']*100)).toFixed(2)) : 0" placeholder="% of income"
                             (input)="reportValueChanged(fields, $event, false, false)">
                         </td>
                 </tr>
@@ -164,13 +164,14 @@
                                 class="amount">{{(Math.abs(reportResponse[option.value] && reportResponse[option.value][fields.value]))|| 0 | currency}}</span>
                                 
                                 <input *ngIf="belowTotalIncome.includes(fields.value) && editReportMode" type="text" class="form-control" 
-                                [value]="(Math.abs(reportResponse[option.value] && reportResponse[option.value][fields.value])).toFixed(2) || 0" placeholder="Amount"
+                                [value]="reportResponse[option.value] && reportResponse[option.value][fields.value] ? (Math.abs(reportResponse[option.value][fields.value])).toFixed(2) : 0" placeholder="Amount"
                                 (input)="filteredReportValueChanged(option.value, fields, $event, true)">
                             </td>
                             <td>
                                 <span *ngIf="fields.value === 'totalIncome' || (fields.value !== 'grossSale' && !editReportMode)">{{Math.abs(reportResponse[option.value] && (reportResponse[option.value][fields.value]/reportResponse[option.value]['totalIncome'])) || 0 | percent: '1.2-2'}}</span>
                                 <input *ngIf="fields.value !== 'grossSale' && editReportMode && fields.value !== 'totalIncome'" type="text" class="form-control" 
-                                [value]="(Math.abs(reportResponse[option.value] && (reportResponse[option.value][fields.value]/reportResponse[option.value]['totalIncome']*100)).toFixed(2)) || 0" placeholder="% of income"
+                                [value]="reportResponse[option.value] && reportResponse[option.value][fields.value] ? (Math.abs((reportResponse[option.value][fields.value]/reportResponse[option.value]['totalIncome']*100)).toFixed(2)) : 0" 
+                                placeholder="% of income"
                                 (input)="filteredReportValueChanged(option.value, fields, $event, false)">
                             </td>
                         </ng-container>
