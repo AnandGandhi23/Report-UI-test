@@ -414,6 +414,7 @@ export class ReportComponent implements OnInit {
         this.showFilteredTale = true;
       } else {
         this.showFilteredTale = false;
+        this.showHierarchicalDD = false;
       }
       setTimeout(() => {
         this.initialFilterApplied = false
