@@ -22,12 +22,15 @@ import { MatToolbarModule } from "@angular/material/toolbar";
 import { MatIconModule } from "@angular/material/icon";
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
 import { MatTreeModule } from "@angular/material/tree";
+import { MatCardModule } from "@angular/material/card";
+import { LoginComponent } from './login/login.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    ReportComponent
+    ReportComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,
@@ -50,7 +53,8 @@ import { MatTreeModule } from "@angular/material/tree";
     MatToolbarModule,
     MatIconModule,
     MatAutocompleteModule,
-    MatTreeModule
+    MatTreeModule,
+    MatCardModule
   ],
   providers: [],
   bootstrap: [AppComponent]

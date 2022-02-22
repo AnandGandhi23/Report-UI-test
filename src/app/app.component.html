@@ -1,1 +1,9 @@
-<app-report></app-report>
+<div *ngIf="this.authService.isLoggedIn()">
+    <mat-toolbar color="primary">
+        <mat-toolbar-row>
+          <span class="example-spacer"></span>
+          <span class="logout" (click)="logout()">Logout</span>
+        </mat-toolbar-row>
+    </mat-toolbar>
+</div>
+<router-outlet></router-outlet>
