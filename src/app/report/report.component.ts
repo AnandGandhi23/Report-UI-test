@@ -220,24 +220,33 @@ export class ReportComponent implements OnInit {
 
   hasNoContent = (_: number, _nodeData: FoodFlatNode) => _nodeData.item === "";
 
-  ngOnInit(): void {
-    this.setSelectedDate();
-    const reportRequest : ReportRequest = {
-      startDate: moment(new Date(this.range.get('start')?.value)).format("YYYY-MM-DD"),
-      endDate: moment(new Date(this.range.get('end')?.value)).format("YYYY-MM-DD"),
-    };
-    this.getReportData(reportRequest);
+  async ngOnInit() {
+    try {
+      this.spinner.show();
+      this.setSelectedDate();
+      const reportRequest : ReportRequest = {
+        startDate: moment(new Date(this.range.get('start')?.value)).format("YYYY-MM-DD"),
+        endDate: moment(new Date(this.range.get('end')?.value)).format("YYYY-MM-DD"),
+      };
 
-    const reportRequestByYear : ReportRequestByYear = {
-      year: this.selectedYear
-    };
-    this.getReportDataByYear(reportRequestByYear);
-
-    this.searchOptionText.valueChanges
-      .pipe(takeUntil(this._onDestroy))
-      .subscribe(() => {
-        this.filterOptions();
-      });
+      const reportRequestByYear : ReportRequestByYear = {
+        year: this.selectedYear
+      };
+      await Promise.all([this.getReportData(reportRequest), this.getReportDataByYear(reportRequestByYear)]);
+      // await this.getReportData(reportRequest);
+  
+      // await this.getReportDataByYear(reportRequestByYear);
+  
+      this.searchOptionText.valueChanges
+        .pipe(takeUntil(this._onDestroy))
+        .subscribe(() => {
+          this.filterOptions();
+        });
+    } catch(e) {
+      console.log('error occured while fetching data', e);
+    } finally {
+      this.spinner.hide();
+    }
   }
 
   ngOnDestroy() {
@@ -247,25 +256,23 @@ export class ReportComponent implements OnInit {
 
   public getReportData = async (reportRequest: ReportRequest) => {
     try {
-      this.spinner.show();
+      
       this.reportData = await this.reportService.getReportData(reportRequest);
       Object.assign(this.originalReportData, this.reportData); 
     } catch(e) {
       console.log('error occured while fetching report data', e);
-    } finally {
-      this.spinner.hide();
     }
   }
 
   public getReportDataByYear = async (reportRequest: ReportRequestByYear) => {
     try {
-      this.spinner.show();
+      
       this.reportDataByYear = await this.reportService.getReportDataByYear(reportRequest);
       Object.assign(this.originalReportDataByYear, this.reportDataByYear);
     } catch(e) {
       console.log('error occured while fetching yearly report data', e);
     } finally {
-      this.spinner.hide();
+      
     }
   }
 
