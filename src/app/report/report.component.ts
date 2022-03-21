@@ -164,7 +164,7 @@ export class ReportComponent implements OnInit {
   public showEditReportbtn = true;
   public editReportMode = false;
   public aboveTotalIncome = ['grossSale', 'returnSale', 'cancelIncome'];
-  public belowTotalIncome = ['cogs', 'commissionConsultant', 'commissionPCC', 'commissionTelemarketing'];
+  public belowTotalIncome = ['cogs', 'commissionConsultant', 'commissionPCC', 'commissionTelemarketing', 'operatingExpenses'];
 
   /** The selection for checklist */
   checklistSelection = new SelectionModel<FoodFlatNode>(true /* multiple */);
@@ -206,6 +206,7 @@ export class ReportComponent implements OnInit {
 
     _database.dataChange.subscribe(data => {
       console.log('data---', data);
+      this.checklistSelection = new SelectionModel<FoodFlatNode>(true /* multiple */);
       this.dataSource.data = data;
     });
   }
@@ -277,18 +278,26 @@ export class ReportComponent implements OnInit {
   }
 
   public async dateChanged() {
+    console.log('startDate---', this.range.get('start')?.value);
+    console.log('endDate---', this.range.get('end')?.value);
 
+    if (this.range.get('start')?.value && this.range.get('end')?.value) {
     const startDate = this.range.get('start')?.value ? moment(new Date(this.range.get('start')?.value)).format("YYYY-MM-DD") : '';
-    const endDate = this.range.get('end')?.value ? moment(new Date(this.range.get('end')?.value)).format("YYYY-MM-DD") : ''
-    if (startDate && endDate) {
+    const endDate = this.range.get('end')?.value ? moment(new Date(this.range.get('end')?.value)).format("YYYY-MM-DD") : '';
+    
       if (!this.showFilteredTale) {
-        this.setSelectedDate();
-
-        const reportRequest : ReportRequest = {
-          startDate,
-          endDate
+        try {
+          this.spinner.show();
+          this.setSelectedDate();
+  
+          const reportRequest : ReportRequest = {
+            startDate,
+            endDate
+          }
+          await this.getReportData(reportRequest);
+        } finally{
+          this.spinner.hide();
         }
-        await this.getReportData(reportRequest);
       } else {
         if (this.filter === 'franchiseName') {
           this.reportResponse = await this.getReportDataByFranchiseName(this.selectedOptions.value, startDate, endDate);

@@ -30,5 +30,9 @@ export const reportFields = [
     {
         label: 'Commissions - Telemarketing',
         value: 'commissionTelemarketing'
+    },
+    {
+        label: 'Operating Expenses',
+        value: 'operatingExpenses'
     }
 ]
