@@ -243,6 +243,12 @@ export class ReportComponent implements OnInit {
         .subscribe(() => {
           this.filterOptions();
         });
+
+        this.range.get('end')?.valueChanges.subscribe((endValue: any) => {
+          if (endValue) {
+            this.dateChanged();
+          }
+        })
     } catch(e) {
       console.log('error occured while fetching data', e);
     } finally {
@@ -281,41 +287,44 @@ export class ReportComponent implements OnInit {
     console.log('startDate---', this.range.get('start')?.value);
     console.log('endDate---', this.range.get('end')?.value);
 
-    if (this.range.get('start')?.value && this.range.get('end')?.value) {
     const startDate = this.range.get('start')?.value ? moment(new Date(this.range.get('start')?.value)).format("YYYY-MM-DD") : '';
     const endDate = this.range.get('end')?.value ? moment(new Date(this.range.get('end')?.value)).format("YYYY-MM-DD") : '';
-    
-      if (!this.showFilteredTale) {
-        try {
-          this.spinner.show();
-          this.setSelectedDate();
-  
-          const reportRequest : ReportRequest = {
-            startDate,
-            endDate
-          }
-          await this.getReportData(reportRequest);
-        } finally{
-          this.spinner.hide();
+
+    if (!this.showFilteredTale) {
+      try {
+        this.spinner.show();
+        this.setSelectedDate();
+
+        const reportRequest: ReportRequest = {
+          startDate,
+          endDate
         }
-      } else {
-        if (this.filter === 'franchiseName') {
-          this.reportResponse = await this.getReportDataByFranchiseName(this.selectedOptions.value, startDate, endDate);
-        } else if (this.filter === 'locationGroup') {
-          this.reportResponse = await this.getReportDataByLocationGroup(this.selectedOptions.value, startDate, endDate);
-        } else {
-          this.reportResponse = await this.getReportDataByLocationName(this.selectedNodes, startDate, endDate);
-        }
-        Object.assign(this.originalReportResponse, this.reportResponse);
+        await this.getReportData(reportRequest);
+      } finally {
+        this.spinner.hide();
       }
+    } else {
+      if (this.filter === 'franchiseName') {
+        this.reportResponse = await this.getReportDataByFranchiseName(this.selectedOptions.value, startDate, endDate);
+      } else if (this.filter === 'locationGroup') {
+        this.reportResponse = await this.getReportDataByLocationGroup(this.selectedOptions.value, startDate, endDate);
+      } else {
+        this.reportResponse = await this.getReportDataByLocationName(this.selectedNodes, startDate, endDate);
+      }
+      Object.assign(this.originalReportResponse, this.reportResponse);
     }
   }
 
-  public yearChanged() {
-    const reportRequestByYear : ReportRequestByYear = {
-      year: this.selectedYear
-    };
-    this.getReportDataByYear(reportRequestByYear);
+  public async yearChanged() {
+    try {
+      this.spinner.show();
+      const reportRequestByYear : ReportRequestByYear = {
+        year: this.selectedYear
+      };
+      await this.getReportDataByYear(reportRequestByYear);
+    } finally {
+      this.spinner.hide();
+    }
   }
 
   public setSelectedDate() {
