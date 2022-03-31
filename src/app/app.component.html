@@ -1,6 +1,15 @@
 <div *ngIf="this.authService.isLoggedIn()">
+  
     <mat-toolbar color="primary">
         <mat-toolbar-row>
+          <div ngbDropdown class="d-inline-block navbar-link">
+            <button class="btn " id="dropdownBasic1" ngbDropdownToggle>Finance Report</button>
+            <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+              <a ngbDropdownItem href="report">P&L Summary</a>
+              <a ngbDropdownItem href="balance-sheet">Balance Sheet</a>
+            </div>
+          </div>
+
           <span class="example-spacer"></span>
           <span class="logout" (click)="logout()">Logout</span>
         </mat-toolbar-row>

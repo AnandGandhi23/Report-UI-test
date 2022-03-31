@@ -24,13 +24,15 @@ import { MatAutocompleteModule } from "@angular/material/autocomplete";
 import { MatTreeModule } from "@angular/material/tree";
 import { MatCardModule } from "@angular/material/card";
 import { LoginComponent } from './login/login.component';
+import { BalanceSheetComponent } from './balance-sheet/balance-sheet.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     ReportComponent,
-    LoginComponent
+    LoginComponent,
+    BalanceSheetComponent
   ],
   imports: [
     BrowserModule,

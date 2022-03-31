@@ -5,3 +5,12 @@
 .logout {
     cursor: pointer;
 }
+
+.navbar-link {
+    button {
+        color: white;
+    }
+    button: focus {
+        box-shadow: none
+    }
+}

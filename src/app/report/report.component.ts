@@ -233,7 +233,7 @@ export class ReportComponent implements OnInit {
       const reportRequestByYear : ReportRequestByYear = {
         year: this.selectedYear
       };
-      await Promise.all([this.getReportData(reportRequest), this.getReportDataByYear(reportRequestByYear)]);
+      // await Promise.all([this.getReportData(reportRequest), this.getReportDataByYear(reportRequestByYear)]);
       // await this.getReportData(reportRequest);
   
       // await this.getReportDataByYear(reportRequestByYear);
@@ -498,6 +498,8 @@ export class ReportComponent implements OnInit {
         this.checklistSelection.deselect(node);
       })
     }
+
+    this.setTotalValue();
   }
 
   public async getFranchiseName() {
