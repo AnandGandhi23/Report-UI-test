@@ -1,0 +1,68 @@
+.main-wrapper {
+    max-width: 1140px;
+    margin: 0 auto;
+    ::ng-deep .input-wrapper {
+        .mat-form-field {
+            .mat-form-field-wrapper {
+                width: 320px;
+                &:hover, &:focus {
+                    border: none;
+                }
+                .mat-form-field-flex {
+                    border: 1px solid #333;
+                    border-radius: 4px;
+                    background: transparent;
+                   
+                   
+                }
+                .mat-form-field-underline {
+                    &:before {
+                        display: none;
+                    }
+                }
+            }
+        }
+    }
+    ::ng-deep .custom-table-wrapper {
+        .accordion {
+                .card {
+                .card-header {
+                    .btn-link {
+                        background: transparent;
+                        color: #333;
+                        text-decoration: none;
+                        width: 100%;
+                        text-align: left;
+                         border: none;
+                        &:focus {
+                            outline: none;
+                            box-shadow: none;
+                        }
+                    }
+                }
+                .card-body {
+                    .report-wrap {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        margin-bottom: 10px;
+                        .report-head {
+                            font-size: 16px;
+                            font-weight: 400;
+                            line-height: 24px;
+                            color: #303030;
+                        }
+                        .report-content{ 
+                            font-size: 16px;
+                            font-weight: 500;
+                            line-height: 20px;
+                            color: #303030;
+                        }
+                    }
+                }
+            }
+        }
+      
+        
+    }
+}

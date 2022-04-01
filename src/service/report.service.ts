@@ -117,4 +117,26 @@ export class ReportService {
     console.log('return value --', returnValue)
     return returnValue;
   }
+
+  public getCashAndCashEq(franchiseIds: string[]): Promise<any> {
+    const headers = { 'Content-Type': 'application/json'};
+    const body = { franchiseIds };
+    const option = {
+      headers
+    };
+    return this.http
+      .post(environment.serverUrl + "/balance-sheet/getCashAndCashEq", body, option)
+      .toPromise();
+  }
+
+  public getAccountsReceivables(franchiseIds: string[]): Promise<any> {
+    const headers = { 'Content-Type': 'application/json'};
+    const body = { franchiseIds };
+    const option = {
+      headers
+    };
+    return this.http
+      .post(environment.serverUrl + "/balance-sheet/getAccountsReceivables", body, option)
+      .toPromise();
+  }
 }
