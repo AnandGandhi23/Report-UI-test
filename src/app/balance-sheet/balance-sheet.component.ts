@@ -27,6 +27,8 @@ export class BalanceSheetComponent implements OnInit {
   public accountsReceivables: any = {};
   public initialFilterApplied: boolean = false;
   public franchiseToShow: flterDropdown[];
+  public totalCashAndCashEq: any;
+  public totalAccountsReceivables: any;
   
   protected _onDestroy = new Subject<void>();
   
@@ -79,6 +81,7 @@ export class BalanceSheetComponent implements OnInit {
         this.selectedFranchiseName.setValue([]);
         this.filterReportData();
       }
+      this.calcualateTotal();
   }
 
   public async getReportData() {
@@ -94,9 +97,28 @@ export class BalanceSheetComponent implements OnInit {
       console.log('response---', response[0], response[1]);
       this.cashAndCashEq = response[0];
       this.accountsReceivables = response[1];
+      this.calcualateTotal()
     } finally {
       this.spinner.hide();
     }
+  }
+
+  public calcualateTotal() {
+    this.totalCashAndCashEq = 0;
+    this.totalAccountsReceivables = 0;
+    Object.keys(this.cashAndCashEq).forEach((item) => {
+      if (this.selectedFranchiseName.value.includes(item)) {
+        this.totalCashAndCashEq += this.cashAndCashEq[item];
+      }
+    })
+
+    Object.keys(this.accountsReceivables).forEach((item) => {
+      if (this.selectedFranchiseName.value.includes(item)) {
+        const value = this.accountsReceivables[item]['netPrice']+(this.accountsReceivables[item]['tax'] || 0)+Math.abs(this.accountsReceivables[item]['refund'])-this.accountsReceivables[item]['amountPaid']-this.accountsReceivables[item]['writeOffs'];
+        console.log('value---', value);
+        this.totalAccountsReceivables += value;
+      }
+    })
   }
 
   onSelectFranchiseName = debounce(() => {
@@ -122,6 +144,7 @@ export class BalanceSheetComponent implements OnInit {
       this.franchiseToShow = this.allFranchiseNames.filter((option) => {
         return selectedOptions.includes(option.value);
       });
+      this.calcualateTotal();
     }catch(e) {
       console.log('error occurred in filter report data', e);
     } finally {

@@ -41,6 +41,18 @@
                     }
                 }
                 .card-body {
+                    .custom-header {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+
+                        .report-content{ 
+                            font-size: 16px;
+                            font-weight: 500;
+                            line-height: 20px;
+                            color: #303030;
+                        }
+                    }
                     .report-wrap {
                         display: flex;
                         justify-content: space-between;

@@ -1,64 +1,88 @@
 <ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" size="medium" color="#fff" type="ball-clip-rotate" [fullScreen]="true">
-    <p style="color: white"> Loading... </p>
+  <p style="color: white"> Loading... </p>
 </ngx-spinner>
 <div class="main-wrapper">
-    <div class="p-5 w-100">
-        <div class="d-flex">
-            <div class="input-wrapper">
-                <mat-form-field appearance="fill">
-                    <mat-label>Option</mat-label>
-                    <mat-select multiple [formControl]="selectedFranchiseName">
-                        <mat-option>
-                            <ngx-mat-select-search [formControl]="searchOptionText" placeholderLabel="Search"
-                                noEntriesFoundLabel="no matching option found">
-                            </ngx-mat-select-search>
-                        </mat-option>
-                        <mat-option value="all" #allSelected (click)="toggleAllSelection()">Select All</mat-option>
-                        <mat-option *ngFor="let franchiseName of searchedFranchiseNames" [value]="franchiseName.value"
-                            (click)="onSelectFranchiseName()">{{franchiseName.label}}</mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>
+  <div class="p-5 w-100">
+    <div class="d-flex">
+      <div class="input-wrapper">
+        <mat-form-field appearance="fill">
+          <mat-label>Option</mat-label>
+          <mat-select multiple [formControl]="selectedFranchiseName">
+            <mat-option>
+              <ngx-mat-select-search [formControl]="searchOptionText" placeholderLabel="Search"
+                noEntriesFoundLabel="no matching option found">
+              </ngx-mat-select-search>
+            </mat-option>
+            <mat-option value="all" #allSelected (click)="toggleAllSelection()">Select All</mat-option>
+            <mat-option *ngFor="let franchiseName of searchedFranchiseNames" [value]="franchiseName.value"
+              (click)="onSelectFranchiseName()">{{franchiseName.label}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
 
-        </div>
-
-
-        <div class="custom-table-wrapper">
-
-            <ngb-accordion #acc="ngbAccordion" activeIds="ngb-panel-0">
-                <ngb-panel title="CURRENT ASSETS">
-                  <ng-template ngbPanelContent>
-                    <ngb-accordion #acc="ngbAccordion" activeIds="ngb-panel-0">
-                      <ngb-panel title="Cash and cash equivalents">
-                        <ng-template ngbPanelContent>
-                         
-                            <div class="report-wrap" *ngFor="let franchise of franchiseToShow">
-                              <div class="report-head">
-                                {{franchise.label}}
-                              </div>
-                              <div class="report-content">
-                                {{(Math.abs(cashAndCashEq[franchise.value]))|| 0 | currency}}
-                              </div>
-                            </div>
-                        </ng-template>
-                      </ngb-panel>
-                      <ngb-panel title="Customer Accounts Receivables">
-                        <ng-template ngbPanelContent>
-                          <div class="report-wrap" *ngFor="let franchise of franchiseToShow">
-                            <div class="report-head">
-                              {{franchise.label}}
-                            </div>
-                            <div class="report-content">
-                              {{(accountsReceivables[franchise.value]['netPrice'] + Math.abs(accountsReceivables[franchise.value]['refund'])-accountsReceivables[franchise.value]['amountPaid']-accountsReceivables[franchise.value]['writeOffs'])||0 | currency}}
-                            </div>
-                          </div>
-                        </ng-template>
-                      </ngb-panel>
-                    </ngb-accordion>
-                  </ng-template>
-                </ngb-panel>
-              </ngb-accordion>
-            
-        </div>
     </div>
+
+
+    <div class="custom-table-wrapper">
+
+      <ngb-accordion #acc="ngbAccordion" activeIds="ngb-panel-0">
+        <ngb-panel title="ASSETS">
+          <ng-template ngbPanelContent>
+            <ngb-accordion #acc="ngbAccordion" activeIds="ngb-panel-0">
+              <ngb-panel title="CURRENT ASSETS">
+                <ng-template ngbPanelContent>
+                  <ngb-accordion #acc="ngbAccordion" activeIds="ngb-panel-0">
+                    <ngb-panel>
+                      <ng-template ngbPanelHeader>
+                        <button type="button" ngbPanelToggle class="p-0 btn btn-link container-fluid text-start ps-0">
+                          <div class="custom-header">
+                            <div>Cash and cash equivalents</div>
+                            <div class="report-content">{{totalCashAndCashEq | currency}}</div>
+                          </div>
+                        </button>
+                      </ng-template>
+
+                      <ng-template ngbPanelContent>
+                        <div class="report-wrap" *ngFor="let franchise of franchiseToShow">
+                          <div class="report-head">
+                            {{franchise.label}}
+                          </div>
+                          <div class="report-content">
+                            {{(Math.abs(cashAndCashEq[franchise.value]))|| 0 | currency}}
+                          </div>
+                        </div>
+                      </ng-template>
+                    </ngb-panel>
+                    <ngb-panel>
+                      <ng-template ngbPanelHeader>
+                        <button type="button" ngbPanelToggle class="p-0 btn btn-link container-fluid text-start ps-0">
+                          <div class="custom-header">
+                            <div>Customer Accounts Receivables</div>
+                            <div class="report-content">{{totalAccountsReceivables | currency}}</div>
+                          </div>
+                        </button>
+                      </ng-template>
+                      <ng-template ngbPanelContent>
+                        <div class="report-wrap" *ngFor="let franchise of franchiseToShow">
+                          <div class="report-head">
+                            {{franchise.label}}
+                          </div>
+                          <div class="report-content">
+                            {{(accountsReceivables[franchise.value]['netPrice'] + (accountsReceivables[franchise.value]['tax'] || 0)+
+                            Math.abs(accountsReceivables[franchise.value]['refund'])-accountsReceivables[franchise.value]['amountPaid']-accountsReceivables[franchise.value]['writeOffs'])||0
+                            | currency}}
+                          </div>
+                        </div>
+                      </ng-template>
+                    </ngb-panel>
+                  </ngb-accordion>
+                </ng-template>
+              </ngb-panel>
+            </ngb-accordion>
+          </ng-template>
+        </ngb-panel>
+      </ngb-accordion>
+
+    </div>
+  </div>
 </div>
