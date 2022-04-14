@@ -186,7 +186,7 @@ export class BalanceSheetComponent implements OnInit {
     Object.keys(this.accountsReceivables).forEach((item) => {
       if (this.selectedFranchiseName.value.includes(item)) {
         const value = this.accountsReceivables[item]['netPrice'] + (this.accountsReceivables[item]['tax'] || 0) + Math.abs(this.accountsReceivables[item]['refund']) + (this.accountsReceivables[item]['donation'] || 0) -
-            this.accountsReceivables[item]['amountPaid']-this.accountsReceivables[item]['writeOffs'];
+            this.accountsReceivables[item]['amountPaid']-(this.accountsReceivables[item]['writeOffs'] || 0);
         console.log('value---', value);
         this.accountsReceivables[item]['displayAmount'] = value;
         this.totalAccountsReceivables += value;
@@ -206,7 +206,7 @@ export class BalanceSheetComponent implements OnInit {
     Object.keys(this.compareAccountsReceivables).forEach((item) => {
       if (this.selectedFranchiseName.value.includes(item)) {
         const value = this.compareAccountsReceivables[item]['netPrice'] + (this.compareAccountsReceivables[item]['tax'] || 0) + Math.abs(this.compareAccountsReceivables[item]['refund']) + (this.compareAccountsReceivables[item]['donation'] || 0) -
-            this.compareAccountsReceivables[item]['amountPaid']-this.compareAccountsReceivables[item]['writeOffs'];
+            this.compareAccountsReceivables[item]['amountPaid']-(this.compareAccountsReceivables[item]['writeOffs'] || 0);
         
         this.compareAccountsReceivables[item]['displayAmount'] = value;
         this.totalCompareAccountsReceivables += value;
