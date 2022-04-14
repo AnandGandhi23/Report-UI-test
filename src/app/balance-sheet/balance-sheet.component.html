@@ -18,7 +18,7 @@
               (click)="onSelectFranchiseName()">{{franchiseName.label}}</mat-option>
           </mat-select>
         </mat-form-field>
-        
+
         <div class="d-flex align-items-center">
         <mat-form-field appearance="fill" class="date-picker">
           <mat-label>Choose a date</mat-label>
@@ -120,7 +120,7 @@
       <table class="table balance-sheet-report">
         <thead>
           <tr>
-            <th>Perticulars</th>
+            <th>Particulars</th>
             <th *ngIf="displayComparisonFields">{{date2ToDisplay}}</th>
             <th>{{date1ToDisplay}}</th>
             <ng-container *ngIf="displayComparisonFields">
