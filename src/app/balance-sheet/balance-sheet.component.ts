@@ -2,11 +2,13 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatOption } from '@angular/material/core';
 import { debounce } from 'lodash';
+import * as moment from 'moment';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { flterDropdown } from 'src/model/report.model';
 import { ReportService } from 'src/service/report.service';
+import { collapseTextChangeRangesAcrossMultipleVersions } from 'typescript';
 import { distinctFranchiseName } from '../../assets/files/dummy-data';
 
 @Component({
@@ -17,6 +19,8 @@ import { distinctFranchiseName } from '../../assets/files/dummy-data';
 export class BalanceSheetComponent implements OnInit {
 
   public Math = Math;
+  public moment = moment;
+
   public selectedFranchiseName = new FormControl([]);
   public searchOptionText = new FormControl('');
   // public filteredOptionsList: flterDropdown[] = [];.
@@ -25,10 +29,31 @@ export class BalanceSheetComponent implements OnInit {
   @ViewChild('allSelected') private allSelected: MatOption;
   public cashAndCashEq: any = {};
   public accountsReceivables: any = {};
+
+  public compareCashAndCashEq: any = {};
+  public compareAccountsReceivables: any = {};
+
   public initialFilterApplied: boolean = false;
   public franchiseToShow: flterDropdown[];
   public totalCashAndCashEq: any;
   public totalAccountsReceivables: any;
+
+  public totalCompareCashAndCashEq: any;
+  public totalCompareAccountsReceivables: any;
+
+  public activeIds1: string[] = ['asset-panel'];
+  public activeIds2: string[] = ['current-asset'];
+  public activeIds3: string[] = [];
+
+  public invoiceCreatedDate = new FormControl(moment(new Date()).format("YYYY-MM-DD"));
+  public comparisonDate = new FormControl();
+  public date1ToDisplay: any;
+  public date2ToDisplay: any;
+  
+  public expandMain: boolean = true;
+  public expandCash: boolean = false;
+  public expandAccount: boolean = false;
+  public displayComparisonFields: boolean = false;
   
   protected _onDestroy = new Subject<void>();
   
@@ -49,6 +74,31 @@ export class BalanceSheetComponent implements OnInit {
         .pipe(takeUntil(this._onDestroy))
         .subscribe(() => {
           this.searchFranchiseName();
+        });
+
+      // set date values to display in UI
+      this.date1ToDisplay = moment(new Date(this.invoiceCreatedDate.value)).format("LL");
+
+      this.comparisonDate.valueChanges
+        .subscribe(async (value) => {
+          if (value) {
+            console.log('value changed---', value);
+            const date = moment(new Date(value)).format("YYYY-MM-DD");
+            await this.getComparisonData(date);
+            this.displayComparisonFields = true;
+            this.date2ToDisplay = moment(new Date(this.comparisonDate.value)).format("LL");
+          } else {
+            console.log('value null---', value);
+            this.displayComparisonFields = false;
+          }
+        });
+
+        this.invoiceCreatedDate.valueChanges
+        .subscribe(async (value) => {
+          if (value) {
+            this.date1ToDisplay = moment(new Date(value)).format("LL");
+            await this.getReportData();
+          }
         });
     } finally {
       this.spinner.hide();
@@ -93,11 +143,32 @@ export class BalanceSheetComponent implements OnInit {
         options.splice(index, 1);
       }
       console.log('options---', options);
-      const response = await Promise.all([this.reportService.getCashAndCashEq(options), this.reportService.getAccountsReceivables(options)]);
+      const invoiceCreatedDate = moment(new Date(this.invoiceCreatedDate.value)).format("YYYY-MM-DD");
+      console.log('invoiceCreatedDate--', invoiceCreatedDate)
+      const response = await Promise.all([this.reportService.getCashAndCashEq(options, invoiceCreatedDate), this.reportService.getAccountsReceivables(options, invoiceCreatedDate)]);
       console.log('response---', response[0], response[1]);
       this.cashAndCashEq = response[0];
       this.accountsReceivables = response[1];
       this.calcualateTotal()
+    } finally {
+      this.spinner.hide();
+    }
+  }
+
+  public async getComparisonData(invoiceCreatedDate: string) {
+    try {
+      this.spinner.show();
+      const options = this.selectedFranchiseName.value.slice();
+      const index = options.indexOf('all');
+      if (index > -1) {
+        options.splice(index, 1);
+      }
+      
+      const response = await Promise.all([this.reportService.getCashAndCashEq(options, invoiceCreatedDate), this.reportService.getAccountsReceivables(options, invoiceCreatedDate)]);
+      console.log('response---', response[0], response[1]);
+      this.compareCashAndCashEq = response[0];
+      this.compareAccountsReceivables = response[1];
+      this.calcualateCompareTotal()
     } finally {
       this.spinner.hide();
     }
@@ -114,12 +185,36 @@ export class BalanceSheetComponent implements OnInit {
 
     Object.keys(this.accountsReceivables).forEach((item) => {
       if (this.selectedFranchiseName.value.includes(item)) {
-        const value = this.accountsReceivables[item]['netPrice']+(this.accountsReceivables[item]['tax'] || 0)+Math.abs(this.accountsReceivables[item]['refund'])-this.accountsReceivables[item]['amountPaid']-this.accountsReceivables[item]['writeOffs'];
+        const value = this.accountsReceivables[item]['netPrice'] + (this.accountsReceivables[item]['tax'] || 0) + Math.abs(this.accountsReceivables[item]['refund']) + (this.accountsReceivables[item]['donation'] || 0) -
+            this.accountsReceivables[item]['amountPaid']-this.accountsReceivables[item]['writeOffs'];
         console.log('value---', value);
+        this.accountsReceivables[item]['displayAmount'] = value;
         this.totalAccountsReceivables += value;
       }
     })
   }
+
+  public calcualateCompareTotal() {
+    this.totalCompareCashAndCashEq = 0;
+    this.totalCompareAccountsReceivables = 0;
+    Object.keys(this.compareCashAndCashEq).forEach((item) => {
+      if (this.selectedFranchiseName.value.includes(item)) {
+        this.totalCompareCashAndCashEq += this.compareCashAndCashEq[item];
+      }
+    })
+
+    Object.keys(this.compareAccountsReceivables).forEach((item) => {
+      if (this.selectedFranchiseName.value.includes(item)) {
+        const value = this.compareAccountsReceivables[item]['netPrice'] + (this.compareAccountsReceivables[item]['tax'] || 0) + Math.abs(this.compareAccountsReceivables[item]['refund']) + (this.compareAccountsReceivables[item]['donation'] || 0) -
+            this.compareAccountsReceivables[item]['amountPaid']-this.compareAccountsReceivables[item]['writeOffs'];
+        
+        this.compareAccountsReceivables[item]['displayAmount'] = value;
+        this.totalCompareAccountsReceivables += value;
+      }
+    })
+  }
+
+  
 
   onSelectFranchiseName = debounce(() => {
     if (!this.initialFilterApplied) {
@@ -150,6 +245,17 @@ export class BalanceSheetComponent implements OnInit {
     } finally {
       this.spinner.hide();
     }
+  }
+
+  expandAll(){
+    this.activeIds1 = ['asset-panel'];
+    this.activeIds2 = ['current-asset'];
+    this.activeIds3 = ['cashAndCashEq', 'accountReceivables'];
+  }
+  collapseAll() {
+    this.activeIds1 = [];
+    this.activeIds2 = [];
+    this.activeIds3 = [];
   }
 
   ngOnDestroy() {

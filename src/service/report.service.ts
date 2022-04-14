@@ -118,22 +118,28 @@ export class ReportService {
     return returnValue;
   }
 
-  public getCashAndCashEq(franchiseIds: string[]): Promise<any> {
+  public getCashAndCashEq(franchiseIds: string[], invoiceCreatedDate: string): Promise<any> {
     const headers = { 'Content-Type': 'application/json'};
     const body = { franchiseIds };
     const option = {
-      headers
+      headers,
+      params: {
+        invoiceCreationDate: invoiceCreatedDate
+      }
     };
     return this.http
       .post(environment.serverUrl + "/balance-sheet/getCashAndCashEq", body, option)
       .toPromise();
   }
 
-  public getAccountsReceivables(franchiseIds: string[]): Promise<any> {
+  public getAccountsReceivables(franchiseIds: string[], invoiceCreatedDate: string): Promise<any> {
     const headers = { 'Content-Type': 'application/json'};
     const body = { franchiseIds };
     const option = {
-      headers
+      headers,
+      params: {
+        invoiceCreationDate: invoiceCreatedDate
+      }
     };
     return this.http
       .post(environment.serverUrl + "/balance-sheet/getAccountsReceivables", body, option)

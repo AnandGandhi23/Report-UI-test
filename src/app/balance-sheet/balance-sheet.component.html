@@ -4,8 +4,8 @@
 <div class="main-wrapper">
   <div class="p-5 w-100">
     <div class="d-flex">
-      <div class="input-wrapper">
-        <mat-form-field appearance="fill">
+      <div class="input-wrapper d-flex">
+        <mat-form-field appearance="fill" class="mr-2 custom-width">
           <mat-label>Option</mat-label>
           <mat-select multiple [formControl]="selectedFranchiseName">
             <mat-option>
@@ -18,21 +18,55 @@
               (click)="onSelectFranchiseName()">{{franchiseName.label}}</mat-option>
           </mat-select>
         </mat-form-field>
+        
+        <div class="d-flex align-items-center">
+        <mat-form-field appearance="fill" class="date-picker">
+          <mat-label>Choose a date</mat-label>
+          <input matInput [matDatepicker]="picker" [formControl]="invoiceCreatedDate">
+          <mat-hint>MM/DD/YYYY</mat-hint>
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+
+        <h4 class="mx-4 my-0 pb-3">COMPARE WITH</h4>
+
+        <mat-form-field appearance="fill" class="date-picker">
+          <mat-label>Choose a date</mat-label>
+          <input matInput [matDatepicker]="comparisonPicker" [formControl]="comparisonDate">
+          <mat-hint>MM/DD/YYYY</mat-hint>
+          <mat-datepicker-toggle matSuffix [for]="comparisonPicker"></mat-datepicker-toggle>
+          <mat-datepicker #comparisonPicker></mat-datepicker>
+        </mat-form-field>
+      </div>
       </div>
 
     </div>
 
 
     <div class="custom-table-wrapper">
-
-      <ngb-accordion #acc="ngbAccordion" activeIds="ngb-panel-0">
-        <ngb-panel title="ASSETS">
-          <ng-template ngbPanelContent>
-            <ngb-accordion #acc="ngbAccordion" activeIds="ngb-panel-0">
-              <ngb-panel title="CURRENT ASSETS">
+      <div class="mb-2 d-none">
+        <button type="button" class="btn btn-sm btn-outline-primary mr-2" (click)="expandAll()">Expand all</button>
+        <button type="button" class="btn btn-sm btn-outline-danger mr-2" (click)="collapseAll()">Collapse all</button>
+      </div>
+      <!-- <ngb-accordion #asset="ngbAccordion" [activeIds]="activeIds1">
+        <ngb-panel id="asset-panel"> -->
+          <!-- <ng-template ngbPanelHeader>
+            <button type="button" ngbPanelToggle class="p-0 btn btn-link container-fluid text-start ps-0">
+              <div class="custom-header">
+                <div>ASSETS</div> -->
+                <!-- <div>
+                  <button type="button" class="btn btn-sm btn-outline-primary mr-2" (click)="expandAll()">Expand all</button>
+                  <button type="button" class="btn btn-sm btn-outline-danger mr-2" (click)="collapseAll()">Collapse all</button>
+                </div> -->
+              <!-- </div>
+            </button>
+          </ng-template> -->
+          <!-- <ng-template ngbPanelContent> -->
+            <ngb-accordion *ngIf="false" #acc="ngbAccordion" [activeIds]="activeIds2">
+              <ngb-panel title="CURRENT ASSETS" id="current-asset">
                 <ng-template ngbPanelContent>
-                  <ngb-accordion #acc="ngbAccordion" activeIds="ngb-panel-0">
-                    <ngb-panel>
+                  <ngb-accordion #acc="ngbAccordion" [activeIds]="activeIds3">
+                    <ngb-panel id="cashAndCashEq">
                       <ng-template ngbPanelHeader>
                         <button type="button" ngbPanelToggle class="p-0 btn btn-link container-fluid text-start ps-0">
                           <div class="custom-header">
@@ -53,7 +87,7 @@
                         </div>
                       </ng-template>
                     </ngb-panel>
-                    <ngb-panel>
+                    <ngb-panel id="accountReceivables">
                       <ng-template ngbPanelHeader>
                         <button type="button" ngbPanelToggle class="p-0 btn btn-link container-fluid text-start ps-0">
                           <div class="custom-header">
@@ -79,9 +113,93 @@
                 </ng-template>
               </ngb-panel>
             </ngb-accordion>
-          </ng-template>
-        </ngb-panel>
-      </ngb-accordion>
+          <!-- </ng-template> -->
+        <!-- </ngb-panel>
+      </ngb-accordion> -->
+
+      <table class="table balance-sheet-report">
+        <thead>
+          <tr>
+            <th>Perticulars</th>
+            <th *ngIf="displayComparisonFields">{{date2ToDisplay}}</th>
+            <th>{{date1ToDisplay}}</th>
+            <ng-container *ngIf="displayComparisonFields">
+              <th>(+)(-)</th>
+              <th>%(+)(-)</th>
+            </ng-container>
+          </tr>
+        </thead>
+        <tr class="expand-main" (click)="expandMain = !expandMain">
+          <th [colSpan]="displayComparisonFields ? '5': '2'">Current Assets</th>
+        </tr>
+        
+        <tr *ngIf="expandMain" class="table-header-data" (click)="expandCash = !expandCash">
+          <th>Cash and cash equivalents </th>
+          <th *ngIf="displayComparisonFields">{{totalCompareCashAndCashEq | currency}}</th>
+          <th>{{totalCashAndCashEq | currency}}</th>
+          <ng-container *ngIf="displayComparisonFields">
+            <th>
+              <span>{{(totalCashAndCashEq - totalCompareCashAndCashEq) > 0 ? '(+)': (totalCashAndCashEq - totalCompareCashAndCashEq) < 0 ?'(-)' : ''}}</span> 
+              {{(Math.abs(totalCashAndCashEq - totalCompareCashAndCashEq).toFixed(2)) | currency}}
+            </th>
+            <th>
+              <span>{{(totalCashAndCashEq - totalCompareCashAndCashEq) > 0 ? '(+)': (totalCashAndCashEq - totalCompareCashAndCashEq) < 0 ?'(-)' : ''}}</span> 
+              {{(Math.abs(totalCashAndCashEq - totalCompareCashAndCashEq)/totalCompareCashAndCashEq*100).toFixed(2)}}
+            </th>
+          </ng-container>
+        </tr>
+        
+        <ng-container *ngIf="expandMain && expandCash">
+          <tr class="border-none" *ngFor="let franchise of franchiseToShow">
+            <td>{{franchise.label}}</td>
+            <td *ngIf="displayComparisonFields">{{Math.abs(compareCashAndCashEq[franchise.value])|| 0 | currency}}</td>
+            <td>{{(Math.abs(cashAndCashEq[franchise.value]))|| 0 | currency}}</td>
+            <ng-container *ngIf="displayComparisonFields">
+              <td>
+                <span>{{(cashAndCashEq[franchise.value] - compareCashAndCashEq[franchise.value]) > 0 ? '(+)': (cashAndCashEq[franchise.value] - compareCashAndCashEq[franchise.value]) < 0 ?'(-)' : ''}}</span> 
+                {{(Math.abs(cashAndCashEq[franchise.value] - compareCashAndCashEq[franchise.value]).toFixed(2)) | currency}}
+              </td>
+              <td>
+                <span>{{(cashAndCashEq[franchise.value] - compareCashAndCashEq[franchise.value]) > 0 ? '(+)': (cashAndCashEq[franchise.value] - compareCashAndCashEq[franchise.value]) < 0 ?'(-)' : ''}}</span> 
+                {{(Math.abs(cashAndCashEq[franchise.value] - compareCashAndCashEq[franchise.value])/compareCashAndCashEq[franchise.value]*100).toFixed(2)}}
+              </td>
+            </ng-container>
+          </tr>
+        </ng-container>
+        
+        <tr *ngIf="expandMain" class="table-header-data" (click)="expandAccount = !expandAccount">
+          <th>Customer Accounts Receivables </th>
+          <th *ngIf="displayComparisonFields">{{totalCompareAccountsReceivables | currency}}</th>
+          <th>{{totalAccountsReceivables | currency}}</th>
+          <ng-container *ngIf="displayComparisonFields">
+            <th>
+              <span>{{(totalAccountsReceivables - totalCompareAccountsReceivables) > 0 ? '(+)': (totalAccountsReceivables - totalCompareAccountsReceivables) < 0 ?'(-)' : ''}}</span> 
+              {{(Math.abs(totalAccountsReceivables - totalCompareAccountsReceivables).toFixed(2)) | currency}}
+            </th>
+            <th>
+              <span>{{(totalAccountsReceivables - totalCompareAccountsReceivables) > 0 ? '(+)': (totalAccountsReceivables - totalCompareAccountsReceivables) < 0 ?'(-)' : ''}}</span> 
+              {{(Math.abs(totalAccountsReceivables - totalCompareAccountsReceivables)/totalCompareAccountsReceivables*100).toFixed(2)}}
+            </th>
+          </ng-container>
+        </tr>
+        <ng-container *ngIf="expandMain && expandAccount">
+          <tr class="border-none" *ngFor="let franchise of franchiseToShow">
+            <td>{{franchise.label}}</td>
+            <td *ngIf="displayComparisonFields">{{(compareAccountsReceivables[franchise.value]['displayAmount'])||0 | currency}}</td>
+            <td>{{(accountsReceivables[franchise.value]['displayAmount'])||0 | currency}}</td>
+            <ng-container *ngIf="displayComparisonFields">
+              <td>
+                <span>{{(accountsReceivables[franchise.value]['displayAmount'] - compareAccountsReceivables[franchise.value]['displayAmount']) > 0 ? '(+)': (accountsReceivables[franchise.value]['displayAmount'] - compareAccountsReceivables[franchise.value]['displayAmount']) < 0 ?'(-)' : ''}}</span> 
+                {{(Math.abs(accountsReceivables[franchise.value]['displayAmount'] - compareAccountsReceivables[franchise.value]['displayAmount']).toFixed(2)) || 0 | currency}}
+              </td>
+              <td>
+                <span>{{(accountsReceivables[franchise.value]['displayAmount'] - compareAccountsReceivables[franchise.value]['displayAmount']) > 0 ? '(+)': (accountsReceivables[franchise.value]['displayAmount'] - compareAccountsReceivables[franchise.value]['displayAmount']) < 0 ?'(-)' : ''}}</span> 
+                {{(Math.abs(accountsReceivables[franchise.value]['displayAmount'] - compareAccountsReceivables[franchise.value]['displayAmount'])/compareAccountsReceivables[franchise.value]['displayAmount']*100).toFixed(2) || 0}}
+              </td>
+            </ng-container>
+          </tr>
+        </ng-container>
+      </table>
 
     </div>
   </div>
