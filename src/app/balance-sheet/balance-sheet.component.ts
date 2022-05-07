@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { FormControl, Validators } from '@angular/forms';
 import { MatOption } from '@angular/material/core';
 import { debounce } from 'lodash';
 import * as moment from 'moment';
@@ -9,7 +9,7 @@ import { takeUntil } from 'rxjs/operators';
 import { flterDropdown } from 'src/model/report.model';
 import { ReportService } from 'src/service/report.service';
 import { collapseTextChangeRangesAcrossMultipleVersions } from 'typescript';
-import { distinctFranchiseName } from '../../assets/files/dummy-data';
+import { cachAndCash, distinctFranchiseName } from '../../assets/files/dummy-data';
 
 @Component({
   selector: 'app-balance-sheet',
@@ -28,6 +28,7 @@ export class BalanceSheetComponent implements OnInit {
   public searchedFranchiseNames: flterDropdown[];
   @ViewChild('allSelected') private allSelected: MatOption;
   public cashAndCashEq: any = {};
+  public cashAndCashEqMain: any = {};
   public accountsReceivables: any = {};
 
   public compareCashAndCashEq: any = {};
@@ -45,13 +46,15 @@ export class BalanceSheetComponent implements OnInit {
   public activeIds2: string[] = ['current-asset'];
   public activeIds3: string[] = [];
 
-  public invoiceCreatedDate = new FormControl(moment(new Date()).format("YYYY-MM-DD"));
+  public invoiceCreatedDate = new FormControl(moment(new Date()).format("YYYY-MM-DD"), [Validators.required]);
   public comparisonDate = new FormControl();
   public date1ToDisplay: any;
   public date2ToDisplay: any;
   
   public expandMain: boolean = true;
   public expandCash: boolean = false;
+  public expandFranchise: boolean[] = [];
+  
   public expandAccount: boolean = false;
   public displayComparisonFields: boolean = false;
   
@@ -149,10 +152,21 @@ export class BalanceSheetComponent implements OnInit {
       console.log('response---', response[0], response[1]);
       this.cashAndCashEq = response[0];
       this.accountsReceivables = response[1];
+      // this.cashAndCashEq = cachAndCash;
+
+      this.setCashAndCashMainValue()
       this.calcualateTotal()
     } finally {
       this.spinner.hide();
     }
+  }
+
+  public setCashAndCashMainValue(){
+    Object.keys(this.cashAndCashEq).forEach((item) => {
+      if (this.selectedFranchiseName.value.includes(item)) {
+        this.cashAndCashEqMain[item] = this.cashAndCashEq[item]['endingBankBalance'] + (this.cashAndCashEq[item]['unclearedCheque'] || 0); // here
+      }
+    })
   }
 
   public async getComparisonData(invoiceCreatedDate: string) {
@@ -179,7 +193,7 @@ export class BalanceSheetComponent implements OnInit {
     this.totalAccountsReceivables = 0;
     Object.keys(this.cashAndCashEq).forEach((item) => {
       if (this.selectedFranchiseName.value.includes(item)) {
-        this.totalCashAndCashEq += this.cashAndCashEq[item];
+        this.totalCashAndCashEq += this.cashAndCashEqMain[item];
       }
     })
 

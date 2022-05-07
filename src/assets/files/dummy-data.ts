@@ -763,3 +763,18 @@ export const distinctLocationGroup = [{
     "locationId": "CF011710"
   }
 ]
+
+export const cachAndCash = {
+  "CF0114":
+  {
+    'endingBankBalance': 1202508.85,
+    'unclearedCheque': 50000
+  },
+  "CF0105": { 'endingBankBalance': 4855080.55, 'unclearedCheque': 50000 },
+  "CF0108": { 'endingBankBalance': 2326346.15, 'unclearedCheque': 50000 },
+  "CF0117": { 'endingBankBalance': 3986235.21, 'unclearedCheque': 50000 },
+  "CF0083": { 'endingBankBalance': 28766042.89, 'unclearedCheque': 50000 },
+  "CF0107": { 'endingBankBalance': 2697840.84, 'unclearedCheque': 50000 },
+  "CF6684": { 'endingBankBalance': 164046433.23, 'unclearedCheque': 50000 },
+  "CF0004": { 'endingBankBalance': 13904204.84, 'unclearedCheque': 50000 }
+}
