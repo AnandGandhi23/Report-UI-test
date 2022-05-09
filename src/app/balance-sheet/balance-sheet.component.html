@@ -154,8 +154,8 @@
 
             <tr  style="cursor: pointer;" (click)="expandFranchise[i] = !expandFranchise[i]">
               <td>{{franchise.label}}</td>
-              <td *ngIf="displayComparisonFields">{{Math.abs(compareCashAndCashEqMain[franchise.value])|| 0 | currency}}</td>
-              <td>{{(Math.abs(cashAndCashEqMain[franchise.value]))|| 0 | currency}}</td>
+              <td *ngIf="displayComparisonFields"><span *ngIf="compareCashAndCashEqMain[franchise.value] < 0">(</span>{{Math.abs(compareCashAndCashEqMain[franchise.value])|| 0 | currency}}<span *ngIf="compareCashAndCashEqMain[franchise.value] < 0">)</span></td>
+              <td><span *ngIf="cashAndCashEqMain[franchise.value] < 0">(</span>{{(Math.abs(cashAndCashEqMain[franchise.value]))|| 0 | currency}}<span *ngIf="cashAndCashEqMain[franchise.value] < 0">)</span></td>
               <ng-container *ngIf="displayComparisonFields">
                 <td>
                   <span>{{(cashAndCashEqMain[franchise.value] - compareCashAndCashEqMain[franchise.value]) > 0 ? '(+)': (cashAndCashEqMain[franchise.value] - compareCashAndCashEqMain[franchise.value]) < 0 ?'(-)' : ''}}</span> 
@@ -185,8 +185,8 @@
             </tr>
             <tr class="border-none" *ngIf="expandMain && expandCash && expandFranchise[i]">
               <td  class="pl-4">Uncleared Cheques</td>
-              <td *ngIf="displayComparisonFields">{{compareCashAndCashEq[franchise.value]['unclearedCheck']|| 0 | currency}}</td>
-              <td>{{(cashAndCashEq[franchise.value]['unclearedCheck'])|| 0 | currency}}</td>
+              <td *ngIf="displayComparisonFields"><span *ngIf="compareCashAndCashEq[franchise.value]['unclearedCheck'] < 0">(</span>{{Math.abs(compareCashAndCashEq[franchise.value]['unclearedCheck'])|| 0 | currency}}<span *ngIf="compareCashAndCashEq[franchise.value]['unclearedCheck'] < 0">)</span></td>
+              <td><span *ngIf="cashAndCashEq[franchise.value]['unclearedCheck'] < 0">(</span>{{Math.abs(cashAndCashEq[franchise.value]['unclearedCheck'])|| 0 | currency}}<span *ngIf="cashAndCashEq[franchise.value]['unclearedCheck'] < 0">)</span></td>
               <ng-container *ngIf="displayComparisonFields">
                 <td>
                   <span>{{(cashAndCashEq[franchise.value]['unclearedCheck'] - compareCashAndCashEq[franchise.value]['unclearedCheck']) > 0 ? '(+)': (cashAndCashEq[franchise.value]['unclearedCheck'] - compareCashAndCashEq[franchise.value]['unclearedCheck']) < 0 ?'(-)' : ''}}</span> 
