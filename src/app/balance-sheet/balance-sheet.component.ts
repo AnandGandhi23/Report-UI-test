@@ -29,6 +29,7 @@ export class BalanceSheetComponent implements OnInit {
   @ViewChild('allSelected') private allSelected: MatOption;
   public cashAndCashEq: any = {};
   public cashAndCashEqMain: any = {};
+  public compareCashAndCashEqMain: any = {};
   public accountsReceivables: any = {};
 
   public compareCashAndCashEq: any = {};
@@ -164,9 +165,19 @@ export class BalanceSheetComponent implements OnInit {
   public setCashAndCashMainValue(){
     Object.keys(this.cashAndCashEq).forEach((item) => {
       if (this.selectedFranchiseName.value.includes(item)) {
-        this.cashAndCashEqMain[item] = this.cashAndCashEq[item]['endingBankBalance'] + (this.cashAndCashEq[item]['unclearedCheque'] || 0); // here
+        this.cashAndCashEqMain[item] = this.cashAndCashEq[item]['endingBankBalance'] + (this.cashAndCashEq[item]['unclearedCheck'] || 0); // here
       }
     })
+  }
+
+  public setCashAndCashCompareMainValue(){
+    Object.keys(this.compareCashAndCashEq).forEach((item) => {
+      if (this.selectedFranchiseName.value.includes(item)) {
+        this.compareCashAndCashEqMain[item] = this.compareCashAndCashEq[item]['endingBankBalance'] + (this.compareCashAndCashEq[item]['unclearedCheck'] || 0); // here
+      }
+    })
+
+    console.log('this.compareCashAndCashEqMain---', this.compareCashAndCashEqMain);
   }
 
   public async getComparisonData(invoiceCreatedDate: string) {
@@ -182,6 +193,9 @@ export class BalanceSheetComponent implements OnInit {
       console.log('response---', response[0], response[1]);
       this.compareCashAndCashEq = response[0];
       this.compareAccountsReceivables = response[1];
+
+      this.setCashAndCashCompareMainValue();
+
       this.calcualateCompareTotal()
     } finally {
       this.spinner.hide();
@@ -213,9 +227,11 @@ export class BalanceSheetComponent implements OnInit {
     this.totalCompareAccountsReceivables = 0;
     Object.keys(this.compareCashAndCashEq).forEach((item) => {
       if (this.selectedFranchiseName.value.includes(item)) {
-        this.totalCompareCashAndCashEq += this.compareCashAndCashEq[item];
+        this.totalCompareCashAndCashEq += this.compareCashAndCashEqMain[item];
       }
     })
+
+    console.log('totalCompareCashAndCashEq--', this.totalCompareCashAndCashEq);
 
     Object.keys(this.compareAccountsReceivables).forEach((item) => {
       if (this.selectedFranchiseName.value.includes(item)) {
