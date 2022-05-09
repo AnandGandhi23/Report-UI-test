@@ -135,8 +135,8 @@
         
         <tr *ngIf="expandMain" class="table-header-data" (click)="expandCash = !expandCash">
           <th>Cash and cash equivalents </th>
-          <th *ngIf="displayComparisonFields">{{totalCompareCashAndCashEq | currency}}</th>
-          <th>{{totalCashAndCashEq | currency}}</th>
+          <th *ngIf="displayComparisonFields"><span *ngIf="totalCompareCashAndCashEq < 0">(</span>{{Math.abs(totalCompareCashAndCashEq) | currency}}<span *ngIf="totalCompareCashAndCashEq < 0">)</span></th>
+          <th><span *ngIf="totalCashAndCashEq < 0">(</span>{{Math.abs(totalCashAndCashEq) | currency}}<span *ngIf="totalCashAndCashEq < 0">)</span></th>
           <ng-container *ngIf="displayComparisonFields">
             <th>
               <span>{{(totalCashAndCashEq - totalCompareCashAndCashEq) > 0 ? '(+)': (totalCashAndCashEq - totalCompareCashAndCashEq) < 0 ?'(-)' : ''}}</span> 
