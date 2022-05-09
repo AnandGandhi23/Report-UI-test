@@ -143,8 +143,8 @@
               {{(Math.abs(totalCashAndCashEq - totalCompareCashAndCashEq).toFixed(2)) | currency}}
             </th>
             <th>
-              <span>{{(totalCashAndCashEq - totalCompareCashAndCashEq) > 0 ? '(+)': (totalCashAndCashEq - totalCompareCashAndCashEq) < 0 ?'(-)' : ''}}</span> 
-              {{(Math.abs(totalCashAndCashEq - totalCompareCashAndCashEq)/totalCompareCashAndCashEq*100).toFixed(2)}}
+              <span>{{(totalCompareCashAndCashEq && (totalCashAndCashEq || 0) - (totalCompareCashAndCashEq || 0)) > 0 ? '(+)': (totalCompareCashAndCashEq && (totalCashAndCashEq||0) - (totalCompareCashAndCashEq||0)) < 0 ?'(-)' : ''}}</span> 
+              {{totalCompareCashAndCashEq ? (Math.abs(totalCashAndCashEq - totalCompareCashAndCashEq)/totalCompareCashAndCashEq*100).toFixed(2):0}}
             </th>
           </ng-container>
         </tr>
@@ -159,42 +159,42 @@
               <ng-container *ngIf="displayComparisonFields">
                 <td>
                   <span>{{(cashAndCashEqMain[franchise.value] - compareCashAndCashEqMain[franchise.value]) > 0 ? '(+)': (cashAndCashEqMain[franchise.value] - compareCashAndCashEqMain[franchise.value]) < 0 ?'(-)' : ''}}</span> 
-                  {{(Math.abs(cashAndCashEqMain[franchise.value] - compareCashAndCashEqMain[franchise.value]).toFixed(2)) || 0 | currency}}
+                  {{(Math.abs((cashAndCashEqMain[franchise.value]||0) - (compareCashAndCashEqMain[franchise.value]||0)).toFixed(2)) || 0 | currency}}
                 </td>
                 <td>
                   <span>{{(cashAndCashEqMain[franchise.value] - compareCashAndCashEqMain[franchise.value]) > 0 ? '(+)': (cashAndCashEqMain[franchise.value] - compareCashAndCashEqMain[franchise.value]) < 0 ?'(-)' : ''}}</span> 
-                  {{(Math.abs(cashAndCashEqMain[franchise.value] - compareCashAndCashEqMain[franchise.value])/compareCashAndCashEqMain[franchise.value]*100).toFixed(2)}}
+                  {{compareCashAndCashEqMain[franchise.value]?(Math.abs(cashAndCashEqMain[franchise.value] - compareCashAndCashEqMain[franchise.value])/compareCashAndCashEqMain[franchise.value]*100).toFixed(2):0}}
                 </td>
               </ng-container>
             </tr>
   
             <tr class="border-none" *ngIf="expandMain && expandCash && expandFranchise[i]">
               <td class="pl-4">Ending Bank Balance</td>
-              <td *ngIf="displayComparisonFields">{{Math.abs(compareCashAndCashEq[franchise.value]['endingBankBalance'])|| 0 | currency}}</td>
-              <td>{{(Math.abs(cashAndCashEq[franchise.value]['endingBankBalance']))|| 0 | currency}}</td>
+              <td *ngIf="displayComparisonFields">{{Math.abs((compareCashAndCashEq[franchise.value] && compareCashAndCashEq[franchise.value]['endingBankBalance']) || 0) || 0 | currency}}</td>
+              <td>{{(Math.abs((cashAndCashEq[franchise.value]['endingBankBalance']) || 0))|| 0 | currency}}</td>
               <ng-container *ngIf="displayComparisonFields">
                 <td>
-                  <span>{{(cashAndCashEq[franchise.value]['endingBankBalance'] - compareCashAndCashEq[franchise.value]['endingBankBalance']) > 0 ? '(+)': (cashAndCashEq[franchise.value]['endingBankBalance'] - compareCashAndCashEq[franchise.value]['endingBankBalance']) < 0 ?'(-)' : ''}}</span> 
-                  {{(Math.abs(cashAndCashEq[franchise.value]['endingBankBalance'] - compareCashAndCashEq[franchise.value]['endingBankBalance']).toFixed(2)) | currency}}
+                  <span>{{((cashAndCashEq[franchise.value]?.endingBankBalance || 0) - (compareCashAndCashEq[franchise.value]?.endingBankBalance||0)) > 0 ? '(+)': ((cashAndCashEq[franchise.value]?.endingBankBalance||0) - (compareCashAndCashEq[franchise.value]?.endingBankBalance || 0)) < 0 ?'(-)' : ''}}</span> 
+                  {{(Math.abs((cashAndCashEq[franchise.value]&&cashAndCashEq[franchise.value]['endingBankBalance']||0) - (compareCashAndCashEq[franchise.value]&&compareCashAndCashEq[franchise.value]['endingBankBalance']||0)).toFixed(2)) | currency}}
                 </td>
                 <td>
-                  <span>{{(cashAndCashEq[franchise.value]['endingBankBalance'] - compareCashAndCashEq[franchise.value]['endingBankBalance']) > 0 ? '(+)': (cashAndCashEq[franchise.value]['endingBankBalance'] - compareCashAndCashEq[franchise.value]['endingBankBalance']) < 0 ?'(-)' : ''}}</span> 
-                  {{(Math.abs(cashAndCashEq[franchise.value]['endingBankBalance'] - compareCashAndCashEq[franchise.value]['endingBankBalance'])/compareCashAndCashEq[franchise.value]['endingBankBalance']*100).toFixed(2)}}
+                  <span>{{(compareCashAndCashEq[franchise.value]?.endingBankBalance && (cashAndCashEq[franchise.value]?.endingBankBalance - compareCashAndCashEq[franchise.value]?.endingBankBalance)) > 0 ? '(+)': (compareCashAndCashEq[franchise.value]?.endingBankBalance && (cashAndCashEq[franchise.value]?.endingBankBalance - compareCashAndCashEq[franchise.value]?.endingBankBalance)) < 0 ?'(-)' : ''}}</span> 
+                  {{compareCashAndCashEq[franchise.value]&&compareCashAndCashEq[franchise.value]['endingBankBalance'] ? (Math.abs(cashAndCashEq[franchise.value]['endingBankBalance'] - compareCashAndCashEq[franchise.value]['endingBankBalance'])/compareCashAndCashEq[franchise.value]['endingBankBalance']*100).toFixed(2): 0}}
                 </td>
               </ng-container>
             </tr>
             <tr class="border-none" *ngIf="expandMain && expandCash && expandFranchise[i]">
               <td  class="pl-4">Uncleared Cheques</td>
-              <td *ngIf="displayComparisonFields"><span *ngIf="compareCashAndCashEq[franchise.value]['unclearedCheck'] < 0">(</span>{{Math.abs(compareCashAndCashEq[franchise.value]['unclearedCheck'])|| 0 | currency}}<span *ngIf="compareCashAndCashEq[franchise.value]['unclearedCheck'] < 0">)</span></td>
-              <td><span *ngIf="cashAndCashEq[franchise.value]['unclearedCheck'] < 0">(</span>{{Math.abs(cashAndCashEq[franchise.value]['unclearedCheck'])|| 0 | currency}}<span *ngIf="cashAndCashEq[franchise.value]['unclearedCheck'] < 0">)</span></td>
+              <td *ngIf="displayComparisonFields"><span *ngIf="compareCashAndCashEq[franchise.value]&&compareCashAndCashEq[franchise.value]['unclearedCheck'] < 0">(</span>{{Math.abs(compareCashAndCashEq[franchise.value] && compareCashAndCashEq[franchise.value]['unclearedCheck'])|| 0 | currency}}<span *ngIf="compareCashAndCashEq[franchise.value]&&compareCashAndCashEq[franchise.value]['unclearedCheck'] < 0">)</span></td>
+              <td><span *ngIf="cashAndCashEq[franchise.value]&&cashAndCashEq[franchise.value]['unclearedCheck'] < 0">(</span>{{Math.abs(cashAndCashEq[franchise.value] && cashAndCashEq[franchise.value]['unclearedCheck'])|| 0 | currency}}<span *ngIf="cashAndCashEq[franchise.value] && cashAndCashEq[franchise.value]['unclearedCheck'] < 0">)</span></td>
               <ng-container *ngIf="displayComparisonFields">
                 <td>
-                  <span>{{(cashAndCashEq[franchise.value]['unclearedCheck'] - compareCashAndCashEq[franchise.value]['unclearedCheck']) > 0 ? '(+)': (cashAndCashEq[franchise.value]['unclearedCheck'] - compareCashAndCashEq[franchise.value]['unclearedCheck']) < 0 ?'(-)' : ''}}</span> 
-                  {{(Math.abs(cashAndCashEq[franchise.value]['unclearedCheck'] - compareCashAndCashEq[franchise.value]['unclearedCheck']).toFixed(2)) | currency}}
+                  <span>{{((cashAndCashEq[franchise.value]?.unclearedCheck || 0) - (compareCashAndCashEq[franchise.value]?.unclearedCheck||0)) > 0 ? '(+)': ((cashAndCashEq[franchise.value]?.unclearedCheck||0) - (compareCashAndCashEq[franchise.value]?.unclearedCheck || 0)) < 0 ?'(-)' : ''}}</span> 
+                  {{(Math.abs((cashAndCashEq[franchise.value]?.unclearedCheck || 0) - (compareCashAndCashEq[franchise.value]?.unclearedCheck||0)).toFixed(2)) | currency}}
                 </td>
                 <td>
-                  <span>{{(compareCashAndCashEq[franchise.value]['unclearedCheck'] && (cashAndCashEq[franchise.value]['unclearedCheck'] - compareCashAndCashEq[franchise.value]['unclearedCheck'])) > 0 ? '(+)': (compareCashAndCashEq[franchise.value]['unclearedCheck'] && (cashAndCashEq[franchise.value]['unclearedCheck'] - compareCashAndCashEq[franchise.value]['unclearedCheck'])) < 0 ?'(-)' : ''}}</span> 
-                  {{compareCashAndCashEq[franchise.value]['unclearedCheck'] ? (Math.abs(cashAndCashEq[franchise.value]['unclearedCheck'] - compareCashAndCashEq[franchise.value]['unclearedCheck'])/compareCashAndCashEq[franchise.value]['unclearedCheck']*100).toFixed(2) : 0}}
+                  <span>{{(compareCashAndCashEq[franchise.value]?.unclearedCheck && (cashAndCashEq[franchise.value]?.unclearedCheck - compareCashAndCashEq[franchise.value]?.unclearedCheck)) > 0 ? '(+)': (compareCashAndCashEq[franchise.value]?.unclearedCheck && (cashAndCashEq[franchise.value]?.unclearedCheck - compareCashAndCashEq[franchise.value]?.unclearedCheck)) < 0 ?'(-)' : ''}}</span> 
+                  {{compareCashAndCashEq[franchise.value]?.unclearedCheck ? (Math.abs(cashAndCashEq[franchise.value]?.unclearedCheck - compareCashAndCashEq[franchise.value]?.unclearedCheck)/compareCashAndCashEq[franchise.value]?.unclearedCheck*100).toFixed(2) : 0}}
                 </td>
               </ng-container>
             </tr>
@@ -219,16 +219,16 @@
         <ng-container *ngIf="expandMain && expandAccount">
           <tr  *ngFor="let franchise of franchiseToShow">
             <td>{{franchise.label}}</td>
-            <td *ngIf="displayComparisonFields">{{(compareAccountsReceivables[franchise.value]['displayAmount'])||0 | currency}}</td>
-            <td>{{(accountsReceivables[franchise.value]['displayAmount'])||0 | currency}}</td>
+            <td *ngIf="displayComparisonFields">{{(compareAccountsReceivables[franchise.value]?.displayAmount)||0 | currency}}</td>
+            <td>{{(accountsReceivables[franchise.value]?.displayAmount)||0 | currency}}</td>
             <ng-container *ngIf="displayComparisonFields">
               <td>
-                <span>{{(accountsReceivables[franchise.value]['displayAmount'] - compareAccountsReceivables[franchise.value]['displayAmount']) > 0 ? '(+)': (accountsReceivables[franchise.value]['displayAmount'] - compareAccountsReceivables[franchise.value]['displayAmount']) < 0 ?'(-)' : ''}}</span> 
-                {{(Math.abs(accountsReceivables[franchise.value]['displayAmount'] - compareAccountsReceivables[franchise.value]['displayAmount']).toFixed(2)) || 0 | currency}}
+                <span>{{((accountsReceivables[franchise.value]?.displayAmount||0) - (compareAccountsReceivables[franchise.value]?.displayAmount||0)) > 0 ? '(+)': ((accountsReceivables[franchise.value]?.displayAmount||0) - (compareAccountsReceivables[franchise.value]?.displayAmount||0)) < 0 ?'(-)' : ''}}</span> 
+                {{(Math.abs(accountsReceivables[franchise.value]?.displayAmount - compareAccountsReceivables[franchise.value]?.displayAmount).toFixed(2)) || 0 | currency}}
               </td>
               <td>
-                <span>{{(accountsReceivables[franchise.value]['displayAmount'] - compareAccountsReceivables[franchise.value]['displayAmount']) > 0 ? '(+)': (accountsReceivables[franchise.value]['displayAmount'] - compareAccountsReceivables[franchise.value]['displayAmount']) < 0 ?'(-)' : ''}}</span> 
-                {{(Math.abs(accountsReceivables[franchise.value]['displayAmount'] - compareAccountsReceivables[franchise.value]['displayAmount'])/compareAccountsReceivables[franchise.value]['displayAmount']*100).toFixed(2) || 0}}
+                <span>{{(compareAccountsReceivables[franchise.value] && (accountsReceivables[franchise.value]?.displayAmount||0) - (compareAccountsReceivables[franchise.value]?.displayAmount||0)) > 0 ? '(+)': (compareAccountsReceivables[franchise.value] && (accountsReceivables[franchise.value]?.displayAmount||0) - (compareAccountsReceivables[franchise.value]?.displayAmount||0)) < 0 ?'(-)' : ''}}</span> 
+                {{compareAccountsReceivables[franchise.value] ? (Math.abs(accountsReceivables[franchise.value]['displayAmount'] - compareAccountsReceivables[franchise.value]['displayAmount'])/compareAccountsReceivables[franchise.value]['displayAmount']*100).toFixed(2) : 0}}
               </td>
             </ng-container>
           </tr>
