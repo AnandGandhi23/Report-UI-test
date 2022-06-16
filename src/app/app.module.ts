@@ -25,6 +25,7 @@ import { MatTreeModule } from "@angular/material/tree";
 import { MatCardModule } from "@angular/material/card";
 import { LoginComponent } from './login/login.component';
 import { BalanceSheetComponent } from './balance-sheet/balance-sheet.component';
+import { PdfComponent } from './pdf/pdf.component';
 
 
 @NgModule({
@@ -32,7 +33,8 @@ import { BalanceSheetComponent } from './balance-sheet/balance-sheet.component';
     AppComponent,
     ReportComponent,
     LoginComponent,
-    BalanceSheetComponent
+    BalanceSheetComponent,
+    PdfComponent
   ],
   imports: [
     BrowserModule,

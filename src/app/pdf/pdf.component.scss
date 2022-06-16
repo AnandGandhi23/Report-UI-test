@@ -1,0 +1,180 @@
+.pdf-compoenet-main{
+    padding: 30px 60px;
+    .pdf-compoenet-wrapper{
+        border-bottom: 3px solid #000;
+        margin-bottom: 25px;
+        .pdf-compoenet-date-time{
+            .pdf-compoenet-time{
+                font-size: 18px;
+                line-height: 28px;
+                font-weight: 500;
+                margin-bottom: 10px;
+            }
+            .pdf-compoenet-date{
+                font-size: 18px;
+                line-height: 28px;
+                font-weight: 500;
+                margin-bottom: 0;
+            }
+        }
+        .pdf-compoenet-headding{
+            flex: 1;
+            .pdf-compoenet-head-health{
+                font-size: 24px;
+                line-height: 34px;
+                font-weight: 500;
+                margin-bottom: 0;
+            }
+            .pdf-compoenet-head-detail{
+                font-size: 28px;
+                line-height: 36px;
+                font-weight: 500;
+                margin-bottom: 0;
+            }
+            .pdf-compoenet-head-period{
+                font-size: 22px;
+                line-height: 32px;
+                font-weight: 500;
+                margin-bottom: 0;
+            }
+        }
+      
+    }
+    .pdf-compoenet-table{
+        padding: 0 130px;
+        width: 100%;
+        display: block;
+        &.border-table {
+            tr {
+                &:last-child {
+                    td {
+                        &:nth-last-of-type(1),
+                        &:nth-last-of-type(2) {
+                            position: relative;
+                            &:before {
+                             content: '';
+                             width: calc(100% - 10px);
+                             height: 1px;
+                             background: #000;
+                             position: absolute;
+                             bottom: -3px;
+                             left: 0;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        tr {
+            .border-top-line-down {
+                position: relative;
+                &:after {
+                 content: '';
+                 width: calc(100% - 10px);
+                 height: 1px;
+                 background: #000;
+                 position: absolute;
+                 left: 0;
+                 bottom: 0;
+                }      
+            }
+            .border-top-line {
+               position: relative;
+               &:before {
+                content: '';
+                width: calc(100% - 10px);
+                height: 1px;
+                background: #000;
+                position: absolute;
+                top: 0;
+                left: 0;
+               }
+            }
+            &:nth-of-type(2), 
+            &:nth-of-type(3),
+            &:nth-of-type(4) {
+                td {
+                    padding-top: 0;
+                    padding-bottom: 0;
+                }
+            }
+            &:nth-of-type(2) {
+                td {
+                    padding-top: 5px;
+                    &:last-child {
+                        text-align: center;
+                    }
+                }
+            }
+        }
+        .pdf-component-data {
+            padding-top: 2px;
+            padding-bottom: 2px;
+            padding-left: 40px;
+        } 
+        .pdf-component-data-list {
+            padding-left: 60px;
+            padding-bottom: 2px;
+            padding-top: 2px;
+        }
+        .pdf-compoenet-th{
+            // flex: 1;
+            text-align: center;
+            border-bottom: 1px solid #000;
+            &:nth-of-type(1){
+                width: 18%;
+            }
+            &:nth-of-type(2){
+                width: 19%;
+            }
+            &:nth-of-type(3){
+                width: 8%;
+            }
+            &:nth-of-type(4){
+                width: 20%;
+            }
+            &:nth-of-type(5){
+                width: 5%;
+            }
+            &:nth-of-type(6){
+                width: 15%;
+            }
+            &:nth-of-type(7){
+                width: 15%;
+            }
+        }
+        .pdf-compoenet-td{
+            // flex: 1;
+            &:nth-of-type(1){
+                width: 18%;
+            }
+            &:nth-of-type(2){
+                width: 19%;
+            }
+            &:nth-of-type(3){
+                width: 8%;
+                max-width: 100px;
+                 overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                
+            }
+            &:nth-of-type(4){
+                width: 20%;
+                max-width: 400px;
+                overflow: hidden;
+               text-overflow: ellipsis;
+               white-space: nowrap;
+            }
+            &:nth-of-type(5){
+                width: 5%;
+            }
+            &:nth-of-type(6){
+                width: 15%;
+            }
+            &:nth-of-type(7){
+                width: 15%;
+            }
+        }
+    }
+}

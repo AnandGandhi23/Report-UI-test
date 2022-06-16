@@ -155,7 +155,7 @@
             <tr  style="cursor: pointer;" (click)="expandFranchise[i] = !expandFranchise[i]">
               <td>{{franchise.label}}</td>
               <td *ngIf="displayComparisonFields"><span *ngIf="compareCashAndCashEqMain[franchise.value] < 0">(</span>{{Math.abs(compareCashAndCashEqMain[franchise.value])|| 0 | currency}}<span *ngIf="compareCashAndCashEqMain[franchise.value] < 0">)</span></td>
-              <td><span *ngIf="cashAndCashEqMain[franchise.value] < 0">(</span>{{(Math.abs(cashAndCashEqMain[franchise.value]))|| 0 | currency}}<span *ngIf="cashAndCashEqMain[franchise.value] < 0">)</span></td>
+              <td><a [routerLink]="['/pdf']" [queryParams]="{franchiseName: franchise.label, franchiseValue: franchise.value, invoiceCreatedDate: tempInvoiceCreatedDate, amount: Math.abs(cashAndCashEqMain[franchise.value]).toFixed(2) || 0}" target="_blank"><span *ngIf="cashAndCashEqMain[franchise.value] < 0">(</span>{{(Math.abs(cashAndCashEqMain[franchise.value]))|| 0 | currency}}<span *ngIf="cashAndCashEqMain[franchise.value] < 0">)</span></a></td>
               <ng-container *ngIf="displayComparisonFields">
                 <td>
                   <span>{{(cashAndCashEqMain[franchise.value] - compareCashAndCashEqMain[franchise.value]) > 0 ? '(+)': (cashAndCashEqMain[franchise.value] - compareCashAndCashEqMain[franchise.value]) < 0 ?'(-)' : ''}}</span> 

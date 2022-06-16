@@ -1,0 +1,269 @@
+<div class="pdf-compoenet-main">
+    <div class="d-flex pdf-compoenet-wrapper">
+        <div class="d-flex flex-column align-items-center justify-content-start pdf-compoenet-date-time">
+            <span class="pdf-compoenet-time">{{currentTime}}</span>
+            <span class="pdf-compoenet-date">{{currentDate}}</span>
+        </div>
+        <div class="d-flex flex-column align-items-center justify-content-center pdf-compoenet-headding">
+            <h5 class="pdf-compoenet-head-health">{{data.franchise.label}}</h5>
+            <h4 class="pdf-compoenet-head-detail">Reconciliation Detail</h4>
+            <h6 class="pdf-compoenet-head-period">1010.10 · KS Checking, Period Ending {{moment(data.invoiceCreatedDate).format('L') }}</h6>
+        </div>
+
+    </div>
+    <table class="pdf-compoenet-table" [cellPadding]="10" [cellSpacing]="5">
+        <tr>
+            <th class="pdf-compoenet-th">
+                Type
+            </th>
+            <th class="pdf-compoenet-th">
+                Date
+            </th>
+            <th class="pdf-compoenet-th">
+                Num
+            </th>
+            <th class="pdf-compoenet-th">
+                Name
+            </th>
+            <th class="pdf-compoenet-th">
+                Clr
+            </th>
+            <th class="pdf-compoenet-th">
+                Amount
+            </th>
+            <th class="pdf-compoenet-th">
+                Balance
+            </th>
+        </tr>
+        <tr>
+            <td><strong>Beginning Balance</strong></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>173,505.17</td>
+        </tr> 
+        <tr>
+            <td class="pdf-component-data" colspan="2"><strong>Cleared Transactions</strong></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td class="pdf-component-data-list" colspan="3"><strong>Checks and Payments - {{debitReponse.length}} items</strong></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+
+        </tr>
+        <tr *ngFor="let debit of debitReponse; let i = index">
+            <td class="text-center pdf-compoenet-td">{{debit.type || '-'}}</td>
+            <td class="text-center pdf-compoenet-td">{{moment(debit.date).format('L')}}</td>
+            <td class="text-center pdf-compoenet-td"><span>-</span></td>
+            <td class="pdf-compoenet-td">{{debit.name}}</td>
+            <td class="text-center pdf-compoenet-td">X</td>
+            <td class="text-center pdf-compoenet-td">-{{debit.amount}}</td>
+            <td class="text-center pdf-compoenet-td">-{{ Math.abs(debit.amount + debitReponse[i-1]?.amount).toFixed(2) || 0}}</td>
+        </tr>
+        <tr>
+            <td colspan="5">Total Checks and Payments</td>
+            <td class="text-center pdf-compoenet-td">-{{debitTotal.toFixed(2)}}</td>
+            <td class="text-center pdf-compoenet-td">-{{debitTotal.toFixed(2)}}</td>
+        </tr>
+    </table>
+
+    <table class="pdf-compoenet-table" [cellPadding]="10" [cellSpacing]="5">
+        <tr>
+            <td colspan="7"><b>Deposits and Credits - {{creditReponse.length}} items</b></td>
+        </tr>
+        <tr>
+            <th class="pdf-compoenet-th">
+                Type
+            </th>
+            <th class="pdf-compoenet-th">
+                Date
+            </th>
+            <th class="pdf-compoenet-th">
+                Num
+            </th>
+            <th class="pdf-compoenet-th">
+                Name
+            </th>
+            <th class="pdf-compoenet-th">
+                Clr
+            </th>
+            <th class="pdf-compoenet-th">
+                Amount
+            </th>
+            <th class="pdf-compoenet-th">
+                Balance
+            </th>
+        </tr>
+        <tr *ngFor="let credit of creditReponse; let i = index">
+            <td class="text-center pdf-compoenet-td">{{credit.type || '-'}}</td>
+            <td class="text-center pdf-compoenet-td">{{moment(credit.date).format('L')}}</td>
+            <td class="text-center pdf-compoenet-td"><span>-</span></td>
+            <td class="pdf-compoenet-td">{{credit.name}}</td>
+            <td class="text-center pdf-compoenet-td">X</td>
+            <td class="text-center pdf-compoenet-td">{{credit.amount}}</td>
+            <td class="text-center pdf-compoenet-td">{{Math.abs(credit.amount + creditReponse[i-1]?.amount).toFixed(2)}}</td>
+        </tr>
+        <tr>
+            <td class="pdf-component-data-list" colspan="3">Total Deposits and Credits</td>
+            <td></td>
+            <td></td>
+            <td class="border-top-line" align="center">{{creditTotal.toFixed(2)}}</td>
+            <td class="border-top-line" align="center">{{creditTotal.toFixed(2)}}</td>
+        </tr>
+        <tr>
+            <td class="pdf-component-data" colspan="2">Total Cleared Transactions</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="border-top-line" align="center">{{totalClearedTransaction.toFixed(2)}}</td>
+            <td class="border-top-line" align="center">{{totalClearedTransaction.toFixed(2)}}</td>
+        </tr>
+        <tr>
+            <td>Cleared Balance</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="border-top-line" align="center">{{totalClearedTransaction.toFixed(2)}}</td>
+            <td class="border-top-line" align="center">{{data.totalAmount}}</td>
+        </tr>
+    </table>
+
+    <table class="pdf-compoenet-table border-table" [cellPadding]="10" [cellSpacing]="5">
+        <tr>
+            <td class="pdf-component-data" colspan="2"><strong>Uncleared Transactions</strong></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td class="pdf-component-data-list" colspan="3"><b>Checks and Payments - {{unclearedCheckReponse.length}} items</b></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <th class="pdf-compoenet-th">
+                Type
+            </th>
+            <th class="pdf-compoenet-th">
+                Date
+            </th>
+            <th class="pdf-compoenet-th">
+                Num
+            </th>
+            <th class="pdf-compoenet-th">
+                Name
+            </th>
+            <th class="pdf-compoenet-th">
+                Clr
+            </th>
+            <th class="pdf-compoenet-th">
+                Amount
+            </th>
+            <th class="pdf-compoenet-th">
+                Balance
+            </th>
+        </tr>
+        <tr *ngFor="let check of unclearedCheckReponse; let i = index">
+            <td class="text-center pdf-compoenet-td">{{check.type || '-'}}</td>
+            <td class="text-center pdf-compoenet-td">{{moment(check.date).format('L')}}</td>
+            <td class="text-center pdf-compoenet-td"><span>-</span></td>
+            <td class="pdf-compoenet-td">{{check.name}}</td>
+            <td class="text-center pdf-compoenet-td">X</td>
+            <td class="text-center pdf-compoenet-td">-{{check.amount}}</td>
+            <td class="text-center pdf-compoenet-td">-{{Math.abs(check.amount + unclearedCheckReponse[i-1]?.amount).toFixed(2)}}</td>
+        </tr>
+        <tr>
+            <td class="pdf-component-data-list" colspan="3">Total Checks and Payments</td>
+            <td></td>
+            <td></td>
+            <td class="border-top-line" align="center">-{{unclearedCheckTotal.toFixed(2)}}</td>
+            <td class="border-top-line" align="center">-{{unclearedCheckTotal.toFixed(2)}}</td>
+        </tr>
+        <tr>
+            <td class="pdf-component-data" colspan="2">Total Uncleared Transactions</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="border-top-line" align="center">{{unclearedCheckTotal.toFixed(2)}}</td>
+            <td class="border-top-line" align="center">{{unclearedCheckTotal.toFixed(2)}}</td>
+        </tr>
+        <tr>
+            <td>Register Balance as of {{moment(data.invoiceCreatedDate).format('L')}}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="border-top-line" align="center">{{registeredBalance.toFixed(2)}}</td>
+            <td class="border-top-line" align="center">{{overallRegisteredBalance.toFixed(2)}}</td>
+        </tr>
+        <!-- <tr>
+            <td class="pdf-component-data" colspan="2"><strong>New Transactions</strong></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td class="pdf-component-data-list" colspan="3"><b>Checks and Payments - 1 item</b></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+  
+        <tr>
+            <td>General Journal</td>
+            <td>05/01/2022</td>
+            <td>4.29D...</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+
+        </tr>
+        <tr>
+            <td colspan="3" class="pdf-component-data">Total Checks and Payments</td>
+            <td></td>
+            <td></td>
+            <td class="border-top-line-down" align="center">-8,144.92</td>
+            <td class="border-top-line-down" align="center">-8,144.92</td>
+
+        </tr>
+        <tr>
+            <td colspan="2" class="pdf-component-data-list">Total New Transactions</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="border-top-line-down" align="center">-8,144.92</td>
+            <td class="border-top-line-down" align="center">-8,144.92</td>
+
+        </tr>
+        <tr>
+            <td><strong>Ending Balance</strong></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="border-top-line-down" align="center"><strong>122,433.04</strong></td>
+            <td class="border-top-line-down" align="center"><strong>295,938.21</strong></td>
+        </tr> -->
+    </table>
+
+</div>

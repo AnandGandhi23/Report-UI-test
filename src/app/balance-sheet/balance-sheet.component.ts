@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { MatOption } from '@angular/material/core';
+import { Router } from '@angular/router';
 import { debounce } from 'lodash';
 import * as moment from 'moment';
 import { NgxSpinnerService } from 'ngx-spinner';
@@ -48,6 +49,7 @@ export class BalanceSheetComponent implements OnInit {
   public activeIds3: string[] = [];
 
   public invoiceCreatedDate = new FormControl(moment(new Date()).format("YYYY-MM-DD"), [Validators.required]);
+  public tempInvoiceCreatedDate = moment(new Date(this.invoiceCreatedDate.value)).format("YYYY-MM-DD");
   public comparisonDate = new FormControl();
   public date1ToDisplay: any;
   public date2ToDisplay: any;
@@ -62,7 +64,7 @@ export class BalanceSheetComponent implements OnInit {
   protected _onDestroy = new Subject<void>();
   
 
-  constructor(private reportService: ReportService, private spinner: NgxSpinnerService) { }
+  constructor(private reportService: ReportService, private spinner: NgxSpinnerService, private router: Router) { }
 
   async ngOnInit() {
     try {
@@ -100,6 +102,7 @@ export class BalanceSheetComponent implements OnInit {
         this.invoiceCreatedDate.valueChanges
         .subscribe(async (value) => {
           if (value) {
+            this.tempInvoiceCreatedDate = moment(new Date(value)).format("YYYY-MM-DD");
             this.date1ToDisplay = moment(new Date(value)).format("LL");
             await this.getReportData();
           }
@@ -291,5 +294,17 @@ export class BalanceSheetComponent implements OnInit {
   ngOnDestroy() {
     this._onDestroy.next();
     this._onDestroy.complete();
+  }
+
+  openPDF(franchise: any) {
+    console.log('data--', franchise);
+
+    const dataToPass = {
+      franchise,
+      invoiceCreatedDate: moment(new Date(this.invoiceCreatedDate.value)).format("YYYY-MM-DD")
+    } 
+    this.router.navigate(['pdf'], { 
+      queryParams: { franchiseName: franchise.label,  franchiseValue: franchise.value, invoiceCreatedDate: moment(new Date(this.invoiceCreatedDate.value)).format("YYYY-MM-DD")} 
+    });
   }
 }
