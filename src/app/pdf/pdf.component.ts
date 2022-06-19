@@ -18,8 +18,11 @@ export class PdfComponent implements OnInit {
   public currentDate = moment(new Date()).format("L");
 
   public debitTotal: number = 0;
+  public debitBalance: number[] = [];
   public creditTotal: number = 0;
+  public creditBalance: number[] = [];
   public unclearedCheckTotal: number = 0;
+  public unclearedCheckBalance: number[] = [];
   public totalClearedTransaction: number = 0;
   public registeredBalance: number = 0;
   public overallRegisteredBalance: number = 0;
@@ -64,8 +67,9 @@ export class PdfComponent implements OnInit {
       this.debitReponse = await this.pdfService.getDebitedValues(this.data.franchise.value, this.data.invoiceCreatedDate);
 
       console.log('debit response---', this.debitReponse);
-      this.debitReponse.forEach((debit: any) => {
+      this.debitReponse.forEach((debit: any, index) => {
         this.debitTotal = this.debitTotal + debit.amount;
+        this.debitBalance[index] = (this.debitBalance[index-1] || 0) + debit.amount;
       });
     } catch (e) {
       console.log('error occurred while getting debited values---');
@@ -80,8 +84,9 @@ export class PdfComponent implements OnInit {
       this.creditReponse = await this.pdfService.getCreditedValues(this.data.franchise.value, this.data.invoiceCreatedDate);
 
       console.log('credit response---', this.creditReponse);
-      this.creditReponse.forEach((credit: any) => {
+      this.creditReponse.forEach((credit: any, index) => {
         this.creditTotal = this.creditTotal + credit.amount;
+        this.creditBalance[index] = (this.creditBalance[index-1] || 0) + credit.amount;
       });
     } catch (e) {
       console.log('error occurred while getting credited values---');
@@ -95,8 +100,9 @@ export class PdfComponent implements OnInit {
       this.spinner.show();
       this.unclearedCheckReponse = await this.pdfService.getUnusedCheckValues(this.data.franchise.value, this.data.invoiceCreatedDate);
 
-      this.unclearedCheckReponse.forEach((unclearedCheck: any) => {
+      this.unclearedCheckReponse.forEach((unclearedCheck: any, index) => {
         this.unclearedCheckTotal = this.unclearedCheckTotal + unclearedCheck.amount;
+        this.unclearedCheckBalance[index] = (this.unclearedCheckBalance[index-1] || 0) + unclearedCheck.amount;
       });
       console.log('unusedCheck response---', this.unclearedCheckReponse);
     } catch (e) {

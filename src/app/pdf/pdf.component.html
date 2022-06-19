@@ -69,7 +69,7 @@
             <td class="pdf-compoenet-td">{{debit.name}}</td>
             <td class="text-center pdf-compoenet-td">X</td>
             <td class="text-center pdf-compoenet-td">-{{debit.amount}}</td>
-            <td class="text-center pdf-compoenet-td">-{{ Math.abs(debit.amount + debitReponse[i-1]?.amount).toFixed(2) || 0}}</td>
+            <td class="text-center pdf-compoenet-td">-{{ Math.abs(debitBalance[i]).toFixed(2) || 0}}</td>
         </tr>
         <tr>
             <td colspan="5">Total Checks and Payments</td>
@@ -112,7 +112,7 @@
             <td class="pdf-compoenet-td">{{credit.name}}</td>
             <td class="text-center pdf-compoenet-td">X</td>
             <td class="text-center pdf-compoenet-td">{{credit.amount}}</td>
-            <td class="text-center pdf-compoenet-td">{{Math.abs(credit.amount + creditReponse[i-1]?.amount).toFixed(2)}}</td>
+            <td class="text-center pdf-compoenet-td">{{Math.abs(creditBalance[i]).toFixed(2)}}</td>
         </tr>
         <tr>
             <td class="pdf-component-data-list" colspan="3">Total Deposits and Credits</td>
@@ -186,7 +186,7 @@
             <td class="pdf-compoenet-td">{{check.name}}</td>
             <td class="text-center pdf-compoenet-td">X</td>
             <td class="text-center pdf-compoenet-td">-{{check.amount}}</td>
-            <td class="text-center pdf-compoenet-td">-{{Math.abs(check.amount + unclearedCheckReponse[i-1]?.amount).toFixed(2)}}</td>
+            <td class="text-center pdf-compoenet-td">-{{Math.abs(unclearedCheckBalance[i]).toFixed(2)}}</td>
         </tr>
         <tr>
             <td class="pdf-component-data-list" colspan="3">Total Checks and Payments</td>
@@ -200,8 +200,8 @@
             <td></td>
             <td></td>
             <td></td>
-            <td class="border-top-line" align="center">{{unclearedCheckTotal.toFixed(2)}}</td>
-            <td class="border-top-line" align="center">{{unclearedCheckTotal.toFixed(2)}}</td>
+            <td class="border-top-line" align="center">-{{unclearedCheckTotal.toFixed(2)}}</td>
+            <td class="border-top-line" align="center">-{{unclearedCheckTotal.toFixed(2)}}</td>
         </tr>
         <tr>
             <td>Register Balance as of {{moment(data.invoiceCreatedDate).format('L')}}</td>
