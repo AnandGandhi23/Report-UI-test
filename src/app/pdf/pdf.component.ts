@@ -26,6 +26,9 @@ export class PdfComponent implements OnInit {
   public totalClearedTransaction: number = 0;
   public registeredBalance: number = 0;
   public overallRegisteredBalance: number = 0;
+  public clearedBalances: number = 0
+
+  public beginningBalance: number = 173505.17;
   
   public moment = moment;
   public Math = Math;
@@ -58,7 +61,9 @@ export class PdfComponent implements OnInit {
   public calculateTotal() {
     this.totalClearedTransaction = this.creditTotal - this.debitTotal;
     this.registeredBalance = this.totalClearedTransaction - this.unclearedCheckTotal;
-    this.overallRegisteredBalance = this.data.totalAmount - this.unclearedCheckTotal
+    
+    this.clearedBalances = this.totalClearedTransaction + this.beginningBalance;
+    this.overallRegisteredBalance = this.clearedBalances - this.unclearedCheckTotal;
   }
 
   public async getDebitedValues() {
